@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { DynamooseModule } from 'nestjs-dynamoose';
+import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [],
+  imports: [
+    DynamooseModule.forRoot(),
+    UserModule,
+    UserModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

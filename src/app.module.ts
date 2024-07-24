@@ -1,16 +1,23 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DynamooseModule } from 'nestjs-dynamoose';
-import { UserModule } from './user/user.module';
+import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    DynamooseModule.forRoot(),
-    UserModule,
-    UserModule,
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
+    AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AuthController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  constructor(private configService: ConfigService) {}
+
+  configure(consumer: MiddlewareConsumer) {}
+}

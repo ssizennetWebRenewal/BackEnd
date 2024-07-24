@@ -6,11 +6,13 @@ export class UserController {
     constructor(
         private readonly userService: UserService
     ) {}
-
+    
+    /*
     @Get('test')
     async test() {
         this.userService.test("partition", "sorting", "ect");
     }
+    */
 
 
 }

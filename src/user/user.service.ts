@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel, Model } from 'nestjs-dynamoose';
-import { UserInfo, UserInfoKey } from 'src/interfaces/user-info.interface';
+import { UserInfo, UserInfoKey, UserSignUp } from 'src/interfaces/user-info.interface';
 
 @Injectable()
 export class UserService {
@@ -9,16 +9,8 @@ export class UserService {
       private userInfoModel: Model<UserInfo, UserInfoKey>,
     ) {}
   
-    async saveUserInfo(
-      user_id: string,
-      user_idx: string,
-      user_email: string,
-    ) {
-      const userData = {
-        user_id,
-        user_idx,
-        user_email,
-      };
+    /*
+    async saveUserInfo(userData: UserSignUp) {
       return this.userInfoModel.create(userData);
     }
 
@@ -31,7 +23,9 @@ export class UserService {
           this.userInfoModel.create(userData);
     }
 
-    async test2(user_id, user_idx) {
-        return this.userInfoModel.get({ user_id, user_idx }); 
+    async test2(user_id, user_generation) {
+        return this.userInfoModel.get({ user_id, user_generation }); 
     }
+    */
+   
   }

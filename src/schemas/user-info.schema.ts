@@ -1,28 +1,37 @@
-import { Schema } from 'dynamoose';
+import { Schema, model } from 'dynamoose';
 
 export const UserInfoSchema = new Schema(
   {
     user_id: {
       type: String,
       hashKey: true,
-      required: true,
+      required: true
     },
-    user_idx: {
-      type: String,
+    user_generation: {
+      type: Number,
       rangeKey: true,
+      required: true
     },
-    user_email: {
+    password: {
       type: String,
+      required: true
+    },
+    department: {
+      type: String,
+      required: true
+    },
+    created_at: {
+      type: Date,
+      default: () => new Date(),
+      required: true
+    },
+    modified_at: {
+      type: Date,
+      default: () => new Date(),
+      required: true
     },
   },
   {
-    timestamps: true, // createdAt, updateAt 컬럼
-    
-    /* 이렇게 쓸 수도 있음
-    timestamps: {
-     * 		"createdAt": "createDate",
-     * 		"updatedAt": null // updatedAt will not be stored as part of the timestamp
-     * 	}
-    */
+    timestamps: true,
   },
 );

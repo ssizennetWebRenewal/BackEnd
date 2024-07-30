@@ -11,15 +11,15 @@ export class AuthController {
         private readonly authService: AuthService,
     ) {}
 
+    @Post('signin')
+    async signin(@Body() body: LoginDto) {
+        return await this.authService.signin(body);
+    }
+
     @Post('signup')
     @ApiOperation({summary: '회원가입 api', description: 'User 정보를 생성한다.'})
     @ApiBody({type: UserSignUp})
     async signup(@Body() body: UserSignUp) {
         return await this.authService.signup(body);
-    }
-
-    @Post('signin')
-    async signin(@Body() body: LoginDto) {
-        return await this.authService.signin(body);
     }
 }

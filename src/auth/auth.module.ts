@@ -3,9 +3,10 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { DynamooseModule } from 'nestjs-dynamoose';
 import { UserInfoSchema } from 'src/schemas/user-info.schema';
-import { SessionsSchema } from 'src/schemas/sessions.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DynamooseConfigService } from 'src/dynamoose-config.service';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -20,8 +21,16 @@ import { DynamooseConfigService } from 'src/dynamoose-config.service';
     }),
     DynamooseModule.forFeature([
       { name: 'UserInfo', schema: UserInfoSchema },
-      { name: 'Sessions', schema: SessionsSchema }
-    ])
+    ]),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: '5m' }
+      }),
+      inject: [ConfigService]
+    })
   ],
   providers: [AuthService, DynamooseConfigService],
   controllers: [AuthController],

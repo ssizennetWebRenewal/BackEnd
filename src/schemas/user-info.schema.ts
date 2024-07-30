@@ -20,6 +20,10 @@ export const UserInfoSchema = new Schema(
       type: String,
       required: true
     },
+    approval: {
+      type: Boolean,
+      required: true
+    },
     created_at: {
       type: Date,
       default: () => new Date(),

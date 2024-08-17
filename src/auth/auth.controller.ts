@@ -1,9 +1,8 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Put, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { CreateUserDto, LoginUserDto } from 'src/auth/dto/user.dto';
 import { ApiBody, ApiOperation } from '@nestjs/swagger';
-import { UserSignUp } from 'src/interfaces/user-info.interface';
-import { AuthGuard } from '@nestjs/passport';//?????
-import { LoginDto } from './dto/auth.dto';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -11,15 +10,21 @@ export class AuthController {
         private readonly authService: AuthService,
     ) {}
 
-    @Post('signin')
-    async signin(@Body() body: LoginDto) {
-        return await this.authService.signin(body);
+    @Put('signup')
+    @ApiOperation({summary: '회원가입', description: 'User 정보를 생성한다.'})
+    @ApiBody({type: CreateUserDto})
+    async signup(@Body() body: CreateUserDto, @Res() res: Response) {
+        await this.authService.signup(body);
+        return res.status(201).json({
+            message: "created"
+        });
     }
 
-    @Post('signup')
-    @ApiOperation({summary: '회원가입 api', description: 'User 정보를 생성한다.'})
-    @ApiBody({type: UserSignUp})
-    async signup(@Body() body: UserSignUp) {
-        return await this.authService.signup(body);
+    @Post('signin')
+    @ApiOperation({summary: '로그인', description: 'id와 pw를 통해 jwt를 반환한다'})
+    @ApiBody({type: LoginUserDto})
+    async signin(@Body() body: LoginUserDto, @Res() res: Response) {
+        let token = await this.authService.signin(body);
+        return res.status(200).json(token);
     }
 }

@@ -22,17 +22,3 @@ export const handler: Handler = async (event, context) => {
   }
   return proxy(server, event, context, 'PROMISE').promise;
 };
-/*
-const createNestServer = async (expressInstance: express.Express): Promise<Server> => {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressInstance));
-  app.enableCors();
-  await app.init();
-  return app.getHttpServer();
-};
-
-export const handler: Handler = async (event: any, context: Context, callback: Callback) => {
-  server = server ?? (await createNestServer(expressApp));
-  const proxy = require('aws-serverless-express');
-  return proxy.proxy(server, event, context, 'PROMISE').promise;
-};
-*/

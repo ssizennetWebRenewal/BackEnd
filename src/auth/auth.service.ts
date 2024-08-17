@@ -1,91 +1,75 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { model } from 'dynamoose';
-import * as dynamoose from 'dynamoose';
-import { InjectModel } from 'nestjs-dynamoose';
-import { UserSignUp } from 'src/interfaces/user-info.interface';
-import { UserInfoSchema } from 'src/schemas/user-info.schema';
-import { LoginDto } from './dto/auth.dto';
 import { JwtService } from '@nestjs/jwt';
+import { model } from 'dynamoose';
+import { InjectModel } from 'nestjs-dynamoose';
+import { CreateUserDto, LoginUserDto } from 'src/auth/dto/user.dto';
+import { UsersSchema } from 'src/schemas/Users.schema';
+import * as bcrypt from 'bcrypt';
+import * as dynamoose from 'dynamoose';
 
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectModel('UserInfo')
-        private readonly UserInfoModel = model('UserInfo', UserInfoSchema),
-        private readonly jwtService: JwtService,
+        @InjectModel('Users')
+        private readonly UsersModel = model('Users', UsersSchema),
+        private readonly jwtService: JwtService
     ) {}
     
-    async signin(loginData: LoginDto) {
-        let user = (await this.UserInfoModel.query('user_id').eq(loginData.user_id).exec())[0];
-        if (!user) {
-            throw new HttpException('User not found', 404);
-        }
-        let isPasswordMatch = await bcrypt.compare(loginData.password, user.password);
-        if (!isPasswordMatch) {
-            throw new HttpException('Password not match', 404);
-        }
-        const acessPayload = {
-            type: 'access',
-            user_id: user.user_id,
-            user_generation: user.user_generation,
-        };
-        const refreshPayload = {
-            type: 'refresh',
-            user_id: user.user_id,
-            user_generation: user.user_generation,
-        };
-        return {
-            acess: this.jwtService.sign(acessPayload, { expiresIn: '5m' }),
-            refresh: this.jwtService.sign(refreshPayload, { expiresIn: '2h' }),
-        }
-    }
-
-    async signup(signupData: UserSignUp) {
-        let isPasswordStrong = this.checkPasswordStrength(signupData);
+    async signup(data: CreateUserDto) {
+        let isPasswordStrong: boolean = this.checkPasswordStrength(data.password.toString());
         if (!isPasswordStrong) {
-            throw new HttpException('Password is not strong', 400);
+            throw new HttpException('비밀번호가 강력하지 않습니다. ', 400);
         }
-        const user = (await this.UserInfoModel.query('user_id').eq(signupData.user_id).exec())[0];
+        let user = (await this.UsersModel.query('id').eq(data.id).exec())[0];
         if (user) {
-            throw new HttpException('User already exists', 409);
+            throw new HttpException('해당 id를 가진 사용자가 이미 존재합니다. ', 409);
         }
 
         const salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(signupData.password, salt);
-        let newUser = new this.UserInfoModel({
-            user_id: signupData.user_id,
-            user_generation: signupData.user_generation,
+        const hashedPassword = await bcrypt.hash(data.password, salt);
+        let newUser = new this.UsersModel({
+            ...data,
             password: hashedPassword,
-            department: signupData.department,
-            approval: false,
-        });
-
+            responsibility: [],
+            approval: true, //나중에 false로 바꿔야 함. 
+        })
+        
         return await dynamoose.transaction([
-            this.UserInfoModel.transaction.create(newUser)
+            this.UsersModel.transaction.create(newUser)
         ]);
     }
 
-    checkPasswordStrength(signupData: UserSignUp): boolean {
+    async signin(data: LoginUserDto): Promise<{}> {
+        let user = (await this.UsersModel.query('user_id').eq(data.id).exec())[0];
+        if (!user) {
+            throw new HttpException('User not found', 404);
+        }
+        let isPasswordMatch = await bcrypt.compare(data.password, user.password);
+        if (!isPasswordMatch) {
+            throw new HttpException('Password not match', 404);
+        }
+        //권한 부여하는 로직 추가하고...
+
+
+
+        return {};
+    }
+
+    checkPasswordStrength(password: string): boolean {
         let min_password = 8;
-        let max_password = 16;
-        if (signupData.password.length < min_password || signupData.password.length > max_password) {
+        let max_password = 256;
+        if (password.length < min_password || password.length > max_password) {
             return false;
         }
-        let hasUppercase = /[A-Z]/.test(signupData.password);
-        let hasLowercase = /[a-z]/.test(signupData.password);
-        let hasNumber = /[0-9]/.test(signupData.password);
-        let hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(signupData.password);
+        let hasUppercase = /[A-Z]/.test(password);
+        let hasLowercase = /[a-z]/.test(password);
+        let hasNumber = /[0-9]/.test(password);
+        let hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
         let characterTypes = [hasUppercase, hasLowercase, hasNumber, hasSpecial];
         let numberOfTypes = characterTypes.filter(Boolean).length;
         if (numberOfTypes < 3) {
             return false;
         }
         return true;
-    }
-
-    async hashing(signupData: UserSignUp){
-        signupData.password = await bcrypt.hash(signupData.password, 14);
-        return signupData;
     }
 }

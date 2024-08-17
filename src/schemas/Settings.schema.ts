@@ -6,28 +6,20 @@ export const SettingsSchema = new dynamoose.Schema({
       hashKey: true,
       required: true
   },
-  categories: {
+  category: {
+    type: String,
+    rangeKey: true,
+    required: true
+  },
+  items: {
     type: Array,
     required: false,
     schema: [
       {
         type: Object,
         schema: {
-          category: {
-            type: String
-          },
-          items: {
-            type: Array,
-            schema: [
-              {
-                type: Object,
-                schema: {
-                  item: String,
-                  description: String
-                }
-              }
-            ]
-          }
+          item: { type: String },
+          description: { type: String }
         }
       }
     ]

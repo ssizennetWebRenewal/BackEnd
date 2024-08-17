@@ -6,12 +6,15 @@ import { CreateUserDto, LoginUserDto } from 'src/auth/dto/user.dto';
 import { UsersSchema } from 'src/schemas/Users.schema';
 import * as bcrypt from 'bcrypt';
 import * as dynamoose from 'dynamoose';
+import { SettingsSchema } from 'src/schemas/Settings.schema';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectModel('Users')
         private readonly UsersModel = model('Users', UsersSchema),
+        @InjectModel('Settings')
+        private readonly SettingsModel = model('Settings', SettingsSchema),
         private readonly jwtService: JwtService
     ) {}
     
@@ -40,7 +43,7 @@ export class AuthService {
     }
 
     async signin(data: LoginUserDto): Promise<{}> {
-        let user = (await this.UsersModel.query('user_id').eq(data.id).exec())[0];
+        let user = (await this.UsersModel.query('id').eq(data.id).exec())[0];
         if (!user) {
             throw new HttpException('User not found', 404);
         }
@@ -48,11 +51,29 @@ export class AuthService {
         if (!isPasswordMatch) {
             throw new HttpException('Password not match', 404);
         }
-        //권한 부여하는 로직 추가하고...
 
-
-
-        return {};
+        let authorities: string[] = [];
+        for (let responsibility of user.responsibility) {
+            let authority = (await this.SettingsModel.query("categoryType").eq("authorityList").where("category").eq(responsibility).exec())[0]?.items;
+            let items: string[] = authority.map((element: { item: string, description?: string }) => element.item);
+            authorities = authorities.concat(items);
+        }
+        
+        const accessPayload = {
+            type: "access",
+            authority: authorities,
+            id: user.id
+        }
+        const refreshPayload = {
+            type: "refresh",
+            authority: authorities,
+            id: user.id
+        };
+        
+        return {
+            access: this.jwtService.sign(accessPayload, { expiresIn: "5m" }),
+            refresh: this.jwtService.sign(refreshPayload, { expiresIn: "2h" })
+        };
     }
 
     checkPasswordStrength(password: string): boolean {

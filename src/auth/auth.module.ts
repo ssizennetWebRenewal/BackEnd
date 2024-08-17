@@ -17,7 +17,10 @@ import { SettingsSchema } from 'src/schemas/Settings.schema';
       { name: "Users", schema: UsersSchema },
       { name: "Settings", schema: SettingsSchema }
     ]),
-    JwtModule
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'default_secret_key', // 환경 변수에서 가져오거나 기본값 설정
+      signOptions: { expiresIn: '1h' }, // 토큰 만료 시간 설정
+    }),
   ],
   controllers: [AuthController],
   providers: [AuthService],

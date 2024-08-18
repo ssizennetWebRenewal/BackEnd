@@ -29,14 +29,7 @@ export class AppController {
       result,
     };
   }
-
-  //나중에 막아야함요
-  @Get('file/:key')
-  async getFile(@Param('key') key: string, @Res() res: Response) {
-    const fileStream = await this.appService.getFile(key);
-    fileStream.pipe(res);
-  }
-
+  
   //나중에 막아야함요
   @Post("addSettings")
   async addSettings(@Body() data: any, @Res() res: Response) {

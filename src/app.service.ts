@@ -1,11 +1,14 @@
-import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Stream } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AppService {
-  constructor() {
+  constructor(
+    private readonly configService: ConfigService,
+  ) {
     this.s3Client = new S3Client({
       region: process.env.AWS_REGION,
       credentials: {
@@ -23,12 +26,19 @@ export class AppService {
   private readonly s3Client: S3Client;
 
   async uploadFile(file: Express.Multer.File): Promise<any> {
-    console.log(file);
-    const { originalname, buffer, mimetype } = file;
+    const fileKey = `${uuidv4()}-${file.originalname}`;
 
-    const uniqueFileName = `${uuidv4()}-${originalname}`;
-    
-    return await this.s3_upload(buffer, this.AWS_S3_BUCKET, uniqueFileName, mimetype);
+    const command = new PutObjectCommand({
+      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+      Key: fileKey,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    });
+
+    await this.s3Client.send(command);
+
+    const imageUrl = `https://${this.configService.get('AWS_S3_BUCKET_NAME')}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/${fileKey}`;
+    return imageUrl;
   }
 
   private async s3_upload(
@@ -58,18 +68,12 @@ export class AppService {
     }
   }
 
-  async getFile(key: string): Promise<Stream> {
-    const command = new GetObjectCommand({
-      Bucket: this.AWS_S3_BUCKET,
+  async deleteFile(key: string): Promise<void> {
+    const command = new DeleteObjectCommand({
+      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
       Key: key,
     });
 
-    try {
-      const response = await this.s3Client.send(command);
-      return response.Body as Stream;
-    } catch (e) {
-      console.error('Error getting file from S3:', e);
-      throw new Error('Error getting file from S3');
-    }
+    await this.s3Client.send(command);
   }
 }

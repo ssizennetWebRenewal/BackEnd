@@ -7,11 +7,11 @@ export const RentsSchema = new dynamoose.Schema({
         required: true
     },
     startDate: {
-        type: Date,
-        required: true
+        type: Number,
+        required: true,
     },
     endDate: {
-        type: Date,
+        type: Number,
         required: true
     },
     team: {
@@ -19,6 +19,7 @@ export const RentsSchema = new dynamoose.Schema({
         required: true,
         index: {
             name: "TeamIndex",
+            rangeKey: "startDate",
             project: ["id", "startDate", "endDate", "team", "title", "applicant", "approved", "createdAt", "updatedAt"]
         }
     },
@@ -26,7 +27,11 @@ export const RentsSchema = new dynamoose.Schema({
         type: String,
         required: true
     },
-    applicant: {
+    applicantId: {
+        type: String,
+        required: true
+    },
+    applicantName: {
         type: String,
         required: true
     },
@@ -66,7 +71,12 @@ export const RentsSchema = new dynamoose.Schema({
         default: 1,
         index: {
             name: "DateIndex",
-            project: ["id", "startDate", "endDate", "team", "title", "applicant", "approved", "createdAt", "updatedAt"]
+            rangeKey: "combinedDate",
+            project: ["ALL"]
         }
+    },
+    combinedDate: {
+        type: String,
+        required: false,
     }
 });

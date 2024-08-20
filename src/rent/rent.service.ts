@@ -1,9 +1,161 @@
-import { Injectable } from '@nestjs/common';
-import { model } from 'dynamoose';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from 'nestjs-dynamoose';
 import { RentsSchema } from 'src/schemas/Rents.schema';
+import { ApplyRentDto, ApproveRentDto, UpdateRentDto } from './dto/rent.dto';
+import { model } from 'dynamoose';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class RentService {
+    constructor(
+        @InjectModel('Rents')
+        private readonly RentsModel = model("Rents", RentsSchema)
+      ) {}
+      
+    async applyRent(apply: ApplyRentDto, userId: string, userName: string): Promise<any> {
+        const startDate = new Date(apply.startDate).getTime();
+        const endDate = new Date(apply.endDate).getTime();
+
+        const combinedDate = `${startDate}#${endDate}`;
+
+        const conflictingRents = await this.RentsModel.query("constTrue")
+            .eq(1)
+            .using("DateIndex")
+            .where("combinedDate").eq(combinedDate)
+            .exec();
+        
+        const conflictingEquipment = conflictingRents.filter(rent => {
+            if (rent && rent.equipmentList && Array.isArray(rent.equipmentList)) {
+                return rent.equipmentList.some((equipment: any) =>
+                    apply.equipmentList.some(
+                        (newEquipment: any) =>
+                            equipment.category === newEquipment.category &&
+                            Array.isArray(equipment.items) &&
+                            equipment.items.some((item: string) => newEquipment.items.includes(item))
+                    )
+                );
+            }
+            return false;
+        });
+
+        if (conflictingEquipment.length > 0) {
+            throw new HttpException('대여 기간 중 겹치는 장비가 이미 대여 중입니다.', 409);
+        }
+
+        const newRent = new this.RentsModel({
+          id: uuidv4(),
+          startDate: startDate,
+          endDate: endDate,
+          team: apply.team,
+          title: apply.title,
+          applicantId: userId,
+          applicantName: userName,
+          approved: 0,
+          equipmentList: apply.equipmentList,
+          combinedDate: combinedDate
+        });
+      
+        await newRent.save();
+        return newRent;
+    }
+
+    async monthRented(year: number, month: number): Promise<any[]> {
+        const yearMonth = `${year}-${String(month).padStart(2, '0')}`;
+        const rents = await this.RentsModel.query("yearMonth")
+            .eq(yearMonth)
+            .using("yearMonthIndex")
+            .exec();
+
+        if (rents.length === 0) {
+            throw new HttpException('선택한 달에 대여 정보가 없습니다.', 204);
+        }
+
+        return rents;
+    }
+
+    async getRent(page: number, count: number): Promise<any[]> {
+        let exclusiveStartKey = null;
+        let items: any[] = [];
     
+        for (let i = 0; i < page; i++) {
+            const result: any = await this.RentsModel.query("constTrue")
+                .eq(1)
+                .using("DateIndex")
+                .limit(count)
+                .startAt(exclusiveStartKey)
+                .sort("descending")
+                .exec();
+            
+            items = result;
+            exclusiveStartKey = result.lastKey;
+        }
+    
+        if (items.length === 0) {
+            throw new HttpException('대여 정보가 없습니다.', 204);
+        }
+        return items;
+    }
+
+    async getRentById(id: string): Promise<any> {
+        const rent = await this.RentsModel.get({ id });
+        if (!rent) {
+            throw new HttpException('대여 정보를 찾을 수 없습니다.', 404);
+        }
+        return rent;
+    }
+
+    async updateRent(id: string, updateRentDto: UpdateRentDto, user: any): Promise<void> {
+        const rent = await this.RentsModel.get(id);
+        if (!rent) {
+            throw new HttpException('대여 정보를 찾을 수 없습니다.', 404);
+        } else if (user.role === '사용자' && rent.applicantId !== user.id) {
+            throw new HttpException('본인이 작성한 대여만 수정할 수 있습니다.', 403);
+        }
+
+        const currentTime = new Date().getTime();
+        const startTime = updateRentDto.startDate ? new Date(updateRentDto.startDate).getTime() : rent.startDate;
+        const endTime = updateRentDto.endDate ? new Date(updateRentDto.endDate).getTime() : rent.endDate;
+
+        if (startTime < currentTime) {
+            throw new HttpException('이미 시작된 대여는 수정할 수 없습니다.', 403);
+        }
+
+        const updateData = {
+            ...updateRentDto,
+            startDate: startTime,
+            endDate: endTime,
+            approved: 0
+        };
+        await this.RentsModel.update({ id }, updateData);
+    }
+
+    async approveRent(approveRentDto: ApproveRentDto): Promise<void> {
+        const { id, approved } = approveRentDto;
+        const rent = await this.RentsModel.get(id);
+        if (!rent) {
+            throw new HttpException('대여 정보를 찾을 수 없습니다.', 404);
+        }
+
+        const currentTime = new Date().getTime();
+        
+        if (rent.endDate < currentTime) {
+            throw new HttpException('이미 지난 대여는 승인 상태를 변경할 수 없습니다.', 403);
+        }
+
+        rent.approved = approved;
+        await this.RentsModel.update({ id }, { approved });
+    }
+
+    async deleteRent(id: string, user: any): Promise<void> {
+        const rent = await this.RentsModel.get(id);
+        if (!rent) {
+            throw new HttpException('대여 정보를 찾을 수 없습니다.', 404);
+        }
+
+        if (user.role === '사용자' && rent.applicantId !== user.id) {
+            throw new HttpException('본인이 작성한 대여만 삭제할 수 있습니다.', 403);
+        }
+
+        await this.RentsModel.delete({ id });
+    }
 }

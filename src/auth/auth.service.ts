@@ -68,12 +68,14 @@ export class AuthService {
         const accessPayload = {
             type: "access",
             authority: authorities,
-            id: user.id
+            id: user.id,
+            name: user.name
         }
         const refreshPayload = {
             type: "refresh",
             authority: authorities,
-            id: user.id
+            id: user.id,
+            name: user.name
         };
         
         return {

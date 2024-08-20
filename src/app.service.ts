@@ -29,7 +29,7 @@ export class AppService {
     const fileKey = `${uuidv4()}-${file.originalname}`;
 
     const command = new PutObjectCommand({
-      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+      Bucket: this.configService.get('AWS_S3_BUCKET'),
       Key: fileKey,
       Body: file.buffer,
       ContentType: file.mimetype,
@@ -37,7 +37,7 @@ export class AppService {
 
     await this.s3Client.send(command);
 
-    const imageUrl = `https://${this.configService.get('AWS_S3_BUCKET_NAME')}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/${fileKey}`;
+    const imageUrl = `https://${this.configService.get('AWS_S3_BUCKET')}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/${fileKey}`;
     return imageUrl;
   }
 
@@ -70,7 +70,7 @@ export class AppService {
 
   async deleteFile(key: string): Promise<void> {
     const command = new DeleteObjectCommand({
-      Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
+      Bucket: this.configService.get('AWS_S3_BUCKET'),
       Key: key,
     });
 

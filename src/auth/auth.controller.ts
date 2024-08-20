@@ -67,27 +67,27 @@ export class AuthController {
     }
 
     @UseGuards(JwtAuthGuard)
-  @Post('uploadProfileImage')
-  @UseInterceptors(FileInterceptor('file'))
-  @ApiOperation({ summary: '프로필 이미지 업로드', description: '사용자의 프로필 이미지를 업로드한다.' })
-  async uploadProfileImage(@UploadedFile() file: Express.Multer.File, @Req() req: Request, @Res() res: Response) {
-    const imageUrl = await this.authService.uploadProfileImage(req.user, file);
-    return res.status(200).json({ message: '프로필 이미지가 성공적으로 업로드되었습니다.', imageUrl });
-  }
+    @Post('uploadProfileImage')
+    @UseInterceptors(FileInterceptor('file'))
+    @ApiOperation({ summary: '프로필 이미지 업로드', description: '사용자의 프로필 이미지를 업로드한다.' })
+    async uploadProfileImage(@UploadedFile() file: Express.Multer.File, @Req() req: Request, @Res() res: Response) {
+        const imageUrl = await this.authService.uploadProfileImage(req.user, file);
+        return res.status(200).json({ message: '프로필 이미지가 성공적으로 업로드되었습니다.', imageUrl });
+    }
 
-  @UseGuards(JwtAuthGuard)
-  @Delete('deleteProfileImage')
-  @ApiOperation({ summary: '프로필 이미지 삭제', description: '사용자의 프로필 이미지를 삭제한다.' })
-  async deleteProfileImage(@Req() req: Request, @Res() res: Response) {
-    await this.authService.deleteProfileImage(req.user);
-    return res.status(200).json({ message: '프로필 이미지가 성공적으로 삭제되었습니다.' });
-  }
+    @UseGuards(JwtAuthGuard)
+    @Delete('deleteProfileImage')
+    @ApiOperation({ summary: '프로필 이미지 삭제', description: '사용자의 프로필 이미지를 삭제한다.' })
+    async deleteProfileImage(@Req() req: Request, @Res() res: Response) {
+        await this.authService.deleteProfileImage(req.user);
+        return res.status(200).json({ message: '프로필 이미지가 성공적으로 삭제되었습니다.' });
+    }
 
-  @UseGuards(JwtAuthGuard)
-  @Delete('deleteAccount')
-  @ApiOperation({ summary: '회원 탈퇴', description: '사용자의 계정을 삭제합니다.' })
-  async deleteAccount(@Req() req: Request, @Res() res: Response) {
-    await this.authService.deleteAccount(req.user);
-    return res.status(200).json({ message: '계정이 성공적으로 삭제되었습니다.' });
-  }
+    @UseGuards(JwtAuthGuard)
+    @Delete('deleteAccount')
+    @ApiOperation({ summary: '회원 탈퇴', description: '사용자의 계정을 삭제합니다.' })
+    async deleteAccount(@Req() req: Request, @Res() res: Response) {
+        await this.authService.deleteAccount(req.user);
+        return res.status(200).json({ message: '계정이 성공적으로 삭제되었습니다.' });
+    }
 }

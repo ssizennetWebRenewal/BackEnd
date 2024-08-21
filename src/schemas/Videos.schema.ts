@@ -1,6 +1,6 @@
 import * as dynamoose from 'dynamoose';
 
-export const RentsSchema = new dynamoose.Schema(
+export const VideosSchema = new dynamoose.Schema(
   {
     id: {
         type: String,
@@ -24,7 +24,7 @@ export const RentsSchema = new dynamoose.Schema(
         }
     },
     uploadDate: {
-        type: Date,
+        type: String,
         required: true
     },
     thumbnail: {
@@ -36,9 +36,13 @@ export const RentsSchema = new dynamoose.Schema(
         required: true
     },
     caption: {
-        type: Number,
+        type: String,
         required: true
     },
+    writer: {
+        type: String,
+        required: true,
+      },
     createdAt: {
         type: Date,
         rangeKey: true,
@@ -49,7 +53,7 @@ export const RentsSchema = new dynamoose.Schema(
         default: () => new Date(),
     },
     constTrue: {
-        type: Boolean,
+        type: Number,
         default: 1,
         index: {
             name: "DateIndex",

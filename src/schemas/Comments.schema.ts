@@ -1,6 +1,6 @@
 import * as dynamoose from 'dynamoose';
 
-export const UsersSchema = new dynamoose.Schema(
+export const CommentsSchema = new dynamoose.Schema(
   {
     id: {
         type: String,
@@ -17,19 +17,26 @@ export const UsersSchema = new dynamoose.Schema(
     },
     noticeId: {
         type: String,
-        required: true
+        required: true,
+        index: {
+            name: 'NoticeIdCreatedAtIndex',
+            rangeKey: 'createdAt',
+            project: ['ALL']
+        }
     },
     body: {
         type: String,
         required: true
     },
     createdAt: {
-        type: Date,
-        default: () => new Date(),
+        type: Number,
+        required: true,
+        default: () => Date.now(),
     },
     updatedAt: {
-        type: Date,
-        default: () => new Date(),
+        type: Number,
+        required: true,
+        default: () => Date.now(),
     }
   },
 );

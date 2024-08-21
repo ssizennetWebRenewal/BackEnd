@@ -1,6 +1,6 @@
 import * as dynamoose from 'dynamoose';
 
-export const UsersSchema = new dynamoose.Schema(
+export const PostsSchema = new dynamoose.Schema(
   {
     id: {
         type: String,
@@ -20,24 +20,26 @@ export const UsersSchema = new dynamoose.Schema(
         required: true,
         index: {
             name: "TitleIndex",
+            rangeKey: 'createdAt',
             project: [
                 "downloadCount", "subCategory", "updatedAt", "createdAt",
                 "filePath", "registrant", "topCategory", "id", "body", "title"
             ]
         }
     },
-    reqistrantId: {
+    registrantId: {
         type: String,
         required: true,
         index: {
             name: "RegistrantIdIndex",
+            rangeKey: 'createdAt',
             project: [
                 "downloadCount", "subCategory", "updatedAt", "createdAt",
                 "filePath", "registrant", "topCategory", "id", "body", "title"
             ]
         }
     },
-    reqistrantName: {
+    registrantName: {
         type: String,
         required: true
     },
@@ -54,42 +56,20 @@ export const UsersSchema = new dynamoose.Schema(
         required: true
     },
     createdAt: {
-        type: Date,
-        default: () => new Date(),
-        index: [
-            {
-                name: "DateIndex",
-                project: [
-                    "downloadCount", "subCategory", "updatedAt", "createdAt",
-                    "filePath", "registrant", "topCategory", "id", "body", "title"
-                ]
-            },
-            {
-                name: "RegistrantIdIndex",
-                project: [
-                    "downloadCount", "subCategory", "updatedAt", "createdAt",
-                    "filePath", "registrant", "topCategory", "id", "body", "title"
-                ]
-            },
-            {
-                name: "TitleIndex",
-                project: [
-                    "downloadCount", "subCategory", "updatedAt", "createdAt",
-                    "filePath", "registrant", "topCategory", "id", "body", "title"
-                ]
-            }
-        ]
+        type: Number,
+        default: () => Date.now(),
     },
     updatedAt: {
-        type: Date,
-        default: () => new Date()
+        type: Number,
+        default: () => Date.now()
     },
     constTrue: {
-        type: Boolean,
+        type: Number,
         required: true,
         default: 1,
         index: {
             name: "DateIndex",
+            rangeKey: "createdAt",
             project: [
                 "downloadCount", "subCategory", "updatedAt", "createdAt",
                 "filePath", "registrant", "topCategory", "id", "body", "title"

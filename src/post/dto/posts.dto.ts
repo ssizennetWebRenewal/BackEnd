@@ -22,15 +22,14 @@ export class CreatePostDto {
   @IsNotEmpty()
   body: string = "";
 
-  @ApiProperty({ description: '첨부파일 경로', example: 'path/to/file.pdf' })
+  @ApiProperty({ description: '유튜브 경로', example: 'https://www.youtube.com/watch?v=GYJA5aC56Nc' })
   @IsString()
-  filePaths: string = "";
+  youtubePath: string = "";
 }
 
 export class UpdatePostDto extends PickType(CreatePostDto, [
   'topCategory',
   'subCategory',
   'title',
-  'body',
-  'filePaths',
+  'body'
 ] as const) {}

@@ -52,8 +52,13 @@ export const PostsSchema = new dynamoose.Schema(
         required: true
     },
     filePaths: {
+        type: Array,
+        schema: [String],
+        required: false
+    },
+    youtubePath: {
         type: String,
-        required: true
+        required: false
     },
     createdAt: {
         type: Number,

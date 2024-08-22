@@ -1,21 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PostService } from './post.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { RolesGuard, Roles } from 'src/guards/roles.guard';
 import { CreatePostDto, UpdatePostDto } from './dto/posts.dto';
 import { CreateCommentDto, UpdateCommentDto } from './dto/comments.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('post')
 export class PostController {
     constructor(
-        private readonly postService: PostService
+        private readonly postService: PostService,
     ) {}
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
     @Put()
-    async createPost(@Body() createPostDto: CreatePostDto, @Req() req: CustomRequest) {
-        return this.postService.createPost(createPostDto, req.user);
+    @UseInterceptors(FilesInterceptor('files'))
+    async createPost(@Body() createPostDto: CreatePostDto, @Req() req: CustomRequest, @UploadedFiles() files?: Express.Multer.File[]) {
+        return this.postService.createPost(createPostDto, req.user, files);
     }
 
     @Get()
@@ -35,6 +37,21 @@ export class PostController {
     @Patch(':id')
     async updatePost(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto, @Req() req: CustomRequest) {
         return this.postService.updatePost(id, updatePostDto, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('사용자', '게시판관리자')
+    @Patch('addFiles/:id')
+    @UseInterceptors(FilesInterceptor('files'))
+    async addFiles(@Param('id') id: string, @UploadedFiles() files: Express.Multer.File[], @Req() req: CustomRequest) {
+        return this.postService.addFiles(id, files, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('사용자', '게시판관리자')
+    @Patch('removeFiles/:id')
+    async removeFiles(@Param('id') id: string, @Body() filesToRemove: string[], @Req() req: CustomRequest) {
+        return this.postService.removeFiles(id, filesToRemove, req.user);
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PostController } from './post.controller';
 import { PostService } from './post.service';
 import { DynamooseModule } from 'nestjs-dynamoose';
@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DynamooseConfigService } from 'src/dynamoose-config.service';
 import { PostsSchema } from 'src/schemas/Posts.schema';
 import { CommentsSchema } from 'src/schemas/Comments.schema';
+import { AppModule } from 'src/app.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CommentsSchema } from 'src/schemas/Comments.schema';
       { name: 'Posts', schema: PostsSchema },
       { name: 'Comments', schema: CommentsSchema },
     ]),
+    forwardRef(() => AppModule)
   ],
   controllers: [PostController],
   providers: [PostService]

@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/swagger';
-import { IsString, IsDate, IsUrl, IsUUID, IsInt, IsOptional } from 'class-validator';
+import { IsString, IsDate, IsUrl, IsInt } from 'class-validator';
 
 export class VideoDto {
   @IsString()
@@ -40,7 +40,7 @@ export class GetVideoDto {
 }
 
 export class VideoResponseDto extends VideoDto {
-  @IsUUID()
+  @IsString()
   id: string = "";
 
   @IsDate()

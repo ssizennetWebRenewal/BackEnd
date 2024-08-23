@@ -3,7 +3,6 @@ import { IsArray, IsDateString, IsNotEmpty, IsString, IsUUID, IsNumber, IsInt } 
 
 export class RentDto {
   @ApiProperty({ description: '대여 ID', example: '123e4567-e89b-12d3-a456-426614174000' })
-  @IsUUID()
   id: string = "";
 
   @ApiProperty({ description: '대여 시작 날짜', example: '2024-08-20T10:00:00Z' })

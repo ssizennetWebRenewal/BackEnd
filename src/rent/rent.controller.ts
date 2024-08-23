@@ -46,7 +46,7 @@ export class RentController {
         const rents = await this.rentService.getRent(pageNumber, countNumber);
         return res.status(200).json(rents);
     }
-
+    
     @Get(':id')
     @ApiOperation({ summary: '대여 정보 조회', description: '특정 대여 정보를 조회합니다.' })
     @ApiParam({ name: 'id', description: '대여 ID (UUID 형식)' })

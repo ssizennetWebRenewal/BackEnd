@@ -1,0 +1,25 @@
+service: nest-serverless
+
+frameworkVersion: '4.1.12'
+
+provider:
+  name: aws
+  region: ap-northeast-2
+  runtime: nodejs20.x
+
+functions:
+  main:
+    handler: dist/lambda.handler
+    events:
+      - http:
+          path: /
+          method: any
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: any
+          cors: true
+
+plugins:
+  - serverless-jetpack
+  - serverless-offline

@@ -1,0 +1,89 @@
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { PostService } from './post.service';
+import { JwtAuthGuard } from 'src/guards/jwt.guard';
+import { RolesGuard, Roles } from 'src/guards/roles.guard';
+import { CreatePostDto, UpdatePostDto } from './dto/posts.dto';
+import { CreateCommentDto, UpdateCommentDto } from './dto/comments.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+
+@Controller('post')
+export class PostController {
+    constructor(
+        private readonly postService: PostService,
+    ) {}
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('사용자', '게시판관리자')
+    @Put()
+    @UseInterceptors(FilesInterceptor('files'))
+    async createPost(@Body() createPostDto: CreatePostDto, @Req() req: CustomRequest, @UploadedFiles() files?: Express.Multer.File[]) {
+        return this.postService.createPost(createPostDto, req.user, files);
+    }
+
+    @Get()
+    async getPosts(@Query('page') page: string, @Query('count') count: string) {
+        const pageNum: number = parseInt(page);
+        const countNum: number = parseInt(count);
+        return this.postService.getPosts(pageNum, countNum);
+    }
+
+    @Get(':id')
+    async getPost(@Param('id') id: string) {
+        return this.postService.getPost(id);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('사용자', '게시판관리자')
+    @Patch(':id')
+    async updatePost(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto, @Req() req: CustomRequest) {
+        return this.postService.updatePost(id, updatePostDto, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('사용자', '게시판관리자')
+    @Patch('addFiles/:id')
+    @UseInterceptors(FilesInterceptor('files'))
+    async addFiles(@Param('id') id: string, @UploadedFiles() files: Express.Multer.File[], @Req() req: CustomRequest) {
+        return this.postService.addFiles(id, files, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('사용자', '게시판관리자')
+    @Patch('removeFiles/:id')
+    async removeFiles(@Param('id') id: string, @Body() filesToRemove: string[], @Req() req: CustomRequest) {
+        return this.postService.removeFiles(id, filesToRemove, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('사용자', '게시판관리자')
+    @Delete(':id')
+    async deletePost(@Param('id') id: string, @Req() req: CustomRequest) {
+        return this.postService.deletePost(id, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('사용자', '게시판관리자')
+    @Put('comment')
+    async createComment(@Body() createCommentDto: CreateCommentDto, @Req() req: CustomRequest) {
+        return this.postService.createComment(createCommentDto, req.user);
+    }
+
+    @Get('comment/:noticeId')
+    async getComments(@Param('noticeId') noticeId: string) {
+        return this.postService.getComments(noticeId);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('사용자', '게시판관리자')
+    @Patch('comment/:id')
+    async updateComment(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto, @Req() req: CustomRequest) {
+        return this.postService.updateComment(id, updateCommentDto, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles('사용자', '게시판관리자')
+    @Delete('comment/:id')
+    async deleteComment(@Param('id') id: string, @Req() req: CustomRequest) {
+        return this.postService.deleteComment(id, req.user);
+    }
+}

@@ -9,6 +9,7 @@ import { SettingsSchema } from 'src/schemas/Settings.schema';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from 'src/strategies/jwt.strategy';
 import { AppModule } from 'src/app.module';
+import { RefreshTokenSchema } from 'src/schemas/RefreshToken.schema';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { AppModule } from 'src/app.module';
     }),
     DynamooseModule.forFeature([
       { name: "Users", schema: UsersSchema },
-      { name: "Settings", schema: SettingsSchema }
+      { name: "Settings", schema: SettingsSchema },
+      { name: "RefreshToken", schema: RefreshTokenSchema }
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({

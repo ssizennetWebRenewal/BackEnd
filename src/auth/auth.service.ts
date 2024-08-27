@@ -133,6 +133,17 @@ export class AuthService {
             refresh: this.jwtService.sign(refreshPayload, { expiresIn: "2h" })
         };
     }
+
+    async logout(req: Request): Promise<void> {
+        if (!req.headers['authorization']) {
+            throw new HttpException("Invalid token", 401);
+        }
+        const token: string = req.headers['authorization'].replace("Bearer ", "");
+        const decodeToken = this.jwtService.verify(token, {secret: this.configService.get('SECRET_KEY')});
+        const userId = decodeToken.id;
+        
+        //await this.RefreshTokenModel.delete({ id: userId });
+    }
     
     async profile(req: Request) {
         if (!req.headers['authorization']) {

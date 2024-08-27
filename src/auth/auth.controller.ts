@@ -38,6 +38,13 @@ export class AuthController {
         let newToken = await this.authService.refresh(body);
         return res.status(200).json(newToken);
     }
+
+    @Post('logout')
+    @ApiOperation({summary: '로그아웃', description: 'DB에 저장된 refresh의 레코드를 삭제합니다. '})
+    async signout(@Req() req: Request, @Res() res: Response) {
+        await this.authService.logout(req);
+        return res.status(200).json();
+    }
     
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자')

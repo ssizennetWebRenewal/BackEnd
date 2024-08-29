@@ -9,7 +9,7 @@ import { Response } from 'express';
 @Controller('rent')
 export class RentController {
     constructor(
-        private readonly rentService: RentService
+        private readonly rentService: RentService,
     ) {}
 
     @UseGuards(JwtAuthGuard, RolesGuard)

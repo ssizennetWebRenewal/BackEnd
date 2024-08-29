@@ -1,11 +1,11 @@
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Stream } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AppService {
+  private readonly logger = new Logger(AppService.name);
   constructor(
     private readonly configService: ConfigService,
   ) {
@@ -38,6 +38,7 @@ export class AppService {
     await this.s3Client.send(command);
 
     const imageUrl = `https://${this.configService.get('AWS_S3_BUCKET')}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/${fileKey}`;
+    this.logger.log(`File uploaded to S3: ${imageUrl}`);
     return imageUrl;
   }
 
@@ -57,6 +58,7 @@ export class AppService {
 
     try {
       const s3Response = await this.s3Client.send(command);
+      this.logger.log(`File uploaded to S3: ${name}`);
       return {
         message: 'File uploaded successfully',
         key: name,
@@ -73,7 +75,7 @@ export class AppService {
       Bucket: this.configService.get('AWS_S3_BUCKET'),
       Key: key,
     });
-
+    this.logger.log(`Deleting file from S3: ${key}`);
     await this.s3Client.send(command);
   }
 }

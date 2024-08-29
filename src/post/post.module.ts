@@ -23,7 +23,7 @@ import { AppModule } from 'src/app.module';
       { name: 'Posts', schema: PostsSchema },
       { name: 'Comments', schema: CommentsSchema },
     ]),
-    forwardRef(() => AppModule)
+    forwardRef(() => AppModule),
   ],
   controllers: [PostController],
   providers: [PostService]

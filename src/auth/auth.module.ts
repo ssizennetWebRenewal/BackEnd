@@ -27,7 +27,7 @@ import { RefreshTokenSchema } from 'src/schemas/RefreshToken.schema';
       secret: process.env.JWT_SECRET || 'default_secret_key',
       signOptions: { expiresIn: '30m' },
     }),
-    forwardRef(() => AppModule)
+    forwardRef(() => AppModule),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

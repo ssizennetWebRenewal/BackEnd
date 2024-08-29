@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { model } from 'dynamoose';
 import { InjectModel } from 'nestjs-dynamoose';
@@ -14,6 +14,7 @@ import { RefreshTokenSchema } from 'src/schemas/RefreshToken.schema';
 
 @Injectable()
 export class AuthService {
+    private readonly logger = new Logger(AuthService.name);
     constructor(
         @InjectModel('Users')
         private readonly UsersModel = model('Users', UsersSchema),
@@ -23,7 +24,7 @@ export class AuthService {
         private readonly RefreshTokenModel = model('RefreshToken', RefreshTokenSchema),
         private readonly configService: ConfigService,
         private readonly jwtService: JwtService,
-        private readonly appService: AppService
+        private readonly appService: AppService,
     ) {}
     
     async signup(data: CreateUserDto) {
@@ -37,6 +38,7 @@ export class AuthService {
             throw new HttpException('비밀번호가 강력하지 않습니다. ', 400);
         }
 
+        this.logger.log(`User ${data.id} signed up`);
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(data.password, salt);
         let newUser = new this.UsersModel({
@@ -81,16 +83,17 @@ export class AuthService {
 
         const access = this.jwtService.sign(accessPayload, { expiresIn: "30m" });
         const refresh = this.jwtService.sign(refreshPayload, { expiresIn: "3d" });
-
+        
         await this.RefreshTokenModel.update({
             id: user.id,
-            token: refresh,
+            refresh: refresh,
             authority: authorities,
             name: user.name,
             issuedAt: Math.floor(Date.now() / 1000),
             expiresAt: Math.floor(Date.now() / 1000) + 3 * 24 * 60 * 60
         });
         
+        this.logger.log(`User ${user.id} logged in`);
         return {
             access: access,
             refresh: refresh
@@ -123,6 +126,7 @@ export class AuthService {
         if (!storedToken) {
             throw new HttpException('Invalid refresh token', 401);
         } else if (storedToken.refresh != refreshToken.refresh) {
+            this.logger.warn(`Invalid refresh token tried`);
             await this.RefreshTokenModel.delete({ id: storedToken.id });
             throw new HttpException('The attempt to issue a token is invalid', 401);
         }
@@ -149,6 +153,7 @@ export class AuthService {
             expiresAt: Math.floor(Date.now() / 1000) + 3 * 24 * 60 * 60
         });
         
+        this.logger.log(`User ${id} refreshed token`);
         return {
             access: access,
             refresh: refresh
@@ -163,6 +168,7 @@ export class AuthService {
         const decodeToken = this.jwtService.verify(token, {secret: this.configService.get('SECRET_KEY')});
         const userId = decodeToken.id;
         
+        this.logger.log(`User ${userId} logged out`);
         await this.RefreshTokenModel.delete({ id: userId });
     }
     
@@ -245,6 +251,7 @@ export class AuthService {
             await this.appService.deleteFile(photoKey);
         }
 
+        this.logger.log(`User ${user.id} deleted account`);
         await this.UsersModel.delete({ id: user.id });
       }
 }

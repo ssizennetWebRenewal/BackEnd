@@ -15,7 +15,7 @@ import { SettingsSchema } from 'src/schemas/Settings.schema';
     DynamooseModule.forFeature([
       { name: "Settings", schema: SettingsSchema }
     ]),
-    JwtModule
+    JwtModule,
   ],
   controllers: [ManageController],
   providers: [ManageService],

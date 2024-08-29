@@ -41,10 +41,7 @@ export class RentDto {
 
   @ApiProperty({
     description: '장비 목록',
-    type: () => [{
-      category: String,
-      items: [String],
-    }],
+    type: () => [EquipmentItemDto], // 명확하게 정의된 DTO 사용
     example: [
       {
         category: '카메라',
@@ -54,10 +51,7 @@ export class RentDto {
   })
   @IsArray()
   @IsNotEmpty()
-  equipmentList: Array<{
-    category: string;
-    items: string[];
-  }> = [{category: "", items: [""]}];
+  equipmentList: EquipmentItemDto[] = [];
 
   @ApiProperty({
     description: '생성 날짜',
@@ -97,3 +91,16 @@ export class ApproveRentDto extends PickType(RentDto, ['id'] as const) {
 }
 
 export class DeleteRentDto extends PickType(RentDto, ['id'] as const) {}
+
+export class EquipmentItemDto {
+  @ApiProperty({ description: '카테고리', example: '카메라' })
+  @IsString()
+  @IsNotEmpty()
+  category: string = "";
+
+  @ApiProperty({ description: '장비 아이템 목록', example: ['CAM-1', 'CAM-2'] })
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty()
+  items: string[] = [];
+}

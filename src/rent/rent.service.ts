@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from 'nestjs-dynamoose';
 import { RentsSchema } from 'src/schemas/Rents.schema';
 import { ApplyRentDto, ApproveRentDto, UpdateRentDto } from './dto/rent.dto';
@@ -7,9 +7,11 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class RentService {
+    private readonly logger = new Logger(RentService.name);
+
     constructor(
         @InjectModel('Rents')
-        private readonly RentsModel = model("Rents", RentsSchema)
+        private readonly RentsModel = model("Rents", RentsSchema),
       ) {}
       
     async applyRent(apply: ApplyRentDto, userId: string, userName: string): Promise<any> {
@@ -56,6 +58,7 @@ export class RentService {
         });
       
         await newRent.save();
+        this.logger.log(`대여 신청: ${newRent.title}, ${newRent.applicantName} (${newRent.id})`);
         return newRent;
     }
 
@@ -127,6 +130,7 @@ export class RentService {
             approved: 0
         };
         await this.RentsModel.update({ id }, updateData);
+        this.logger.log(`대여 수정: ${rent.title}, ${user.id} (${rent.id})`);
     }
 
     async approveRent(approveRentDto: ApproveRentDto): Promise<void> {
@@ -144,6 +148,7 @@ export class RentService {
 
         rent.approved = approved;
         await this.RentsModel.update({ id }, { approved });
+        this.logger.log(`대여 승인: ${rent.title} (${rent.id})`);
     }
 
     async deleteRent(id: string, user: any): Promise<void> {
@@ -157,5 +162,6 @@ export class RentService {
         }
 
         await this.RentsModel.delete({ id });
+        this.logger.log(`대여 삭제: ${rent.title}, ${user.id} (${rent.id})`);
     }
 }

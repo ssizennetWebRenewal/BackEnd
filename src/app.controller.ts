@@ -11,8 +11,8 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     @InjectModel('Settings')
-        private readonly SettingsModel = model('Users', SettingsSchema),
-    ) {}
+    private readonly SettingsModel = model('Users', SettingsSchema),
+  ) {}
 
   @Get()
   getHello(): string {

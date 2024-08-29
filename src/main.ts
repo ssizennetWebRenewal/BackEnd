@@ -1,11 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+async function bootstrap() {    
+  const app = await NestFactory.create(AppModule, {});
   
-  const configService = app.get(ConfigService);
+  const corsOptions: CorsOptions = {
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  };
+
+  app.enableCors(corsOptions);
+
+  const config = new DocumentBuilder()
+    .setTitle('Project-Re API')
+    .setDescription('Project-Re API 명세서')
+    .setVersion('1.0.0')
+    .addBearerAuth()
+    .addTag('swagger')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
 
   await app.listen(3000);
 }

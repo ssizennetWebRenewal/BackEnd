@@ -39,6 +39,7 @@ export class AuthController {
         return res.status(200).json(newToken);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post('logout')
     @ApiOperation({summary: '로그아웃', description: 'DB에 저장된 refresh의 레코드를 삭제합니다. '})
     async signout(@Req() req: Request, @Res() res: Response) {

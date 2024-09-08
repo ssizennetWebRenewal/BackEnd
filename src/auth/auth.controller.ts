@@ -1,12 +1,13 @@
 import { Body, Controller, Delete, HttpCode, Patch, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto, CreateUserDto, LoginUserDto, UpdateUserDto, refreshTokenDto } from 'src/auth/dto/user.dto';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { Roles, RolesGuard } from 'src/guards/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -47,6 +48,7 @@ export class AuthController {
         return res.status(200).json();
     }
     
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자')
     @Post('profile')
@@ -56,6 +58,7 @@ export class AuthController {
         return res.status(200).json(profile);
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard)
     @Patch('updateProfile')
     @ApiOperation({ summary: '유저 정보 수정', description: '사용자의 프로필 정보를 수정한다.' })
@@ -65,6 +68,7 @@ export class AuthController {
     return res.status(200).json(updatedProfile);
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard)
     @Patch('changePassword')
     @ApiOperation({ summary: '비밀번호 변경', description: '사용자의 비밀번호를 변경한다.' })
@@ -74,15 +78,30 @@ export class AuthController {
         return res.status(200).json({ message: '비밀번호가 성공적으로 변경되었습니다.' });
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard)
     @Post('uploadProfileImage')
     @UseInterceptors(FileInterceptor('file'))
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        description: '업로드할 파일',
+        schema: {
+          type: 'object',
+          properties: {
+            file: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+        },
+      })
     @ApiOperation({ summary: '프로필 이미지 업로드', description: '사용자의 프로필 이미지를 업로드한다.' })
     async uploadProfileImage(@UploadedFile() file: Express.Multer.File, @Req() req: Request, @Res() res: Response) {
         const imageUrl = await this.authService.uploadProfileImage(req.user, file);
         return res.status(200).json({ message: '프로필 이미지가 성공적으로 업로드되었습니다.', imageUrl });
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard)
     @Delete('deleteProfileImage')
     @ApiOperation({ summary: '프로필 이미지 삭제', description: '사용자의 프로필 이미지를 삭제한다.' })
@@ -91,6 +110,7 @@ export class AuthController {
         return res.status(200).json({ message: '프로필 이미지가 성공적으로 삭제되었습니다.' });
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard)
     @Delete('deleteAccount')
     @ApiOperation({ summary: '회원 탈퇴', description: '사용자의 계정을 삭제합니다.' })

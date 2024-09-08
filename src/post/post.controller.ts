@@ -5,13 +5,16 @@ import { RolesGuard, Roles } from 'src/guards/roles.guard';
 import { CreatePostDto, UpdatePostDto } from './dto/posts.dto';
 import { CreateCommentDto, UpdateCommentDto } from './dto/comments.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Post')
 @Controller('post')
 export class PostController {
     constructor(
         private readonly postService: PostService,
     ) {}
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
     @Put()
@@ -32,6 +35,7 @@ export class PostController {
         return this.postService.getPost(id);
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
     @Patch(':id')
@@ -39,6 +43,7 @@ export class PostController {
         return this.postService.updatePost(id, updatePostDto, req.user);
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
     @Patch('addFiles/:id')
@@ -47,6 +52,7 @@ export class PostController {
         return this.postService.addFiles(id, files, req.user);
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
     @Patch('removeFiles/:id')
@@ -54,6 +60,7 @@ export class PostController {
         return this.postService.removeFiles(id, filesToRemove, req.user);
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
     @Delete(':id')
@@ -61,6 +68,7 @@ export class PostController {
         return this.postService.deletePost(id, req.user);
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
     @Put('comment')
@@ -73,6 +81,7 @@ export class PostController {
         return this.postService.getComments(noticeId);
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
     @Patch('comment/:id')
@@ -80,6 +89,7 @@ export class PostController {
         return this.postService.updateComment(id, updateCommentDto, req.user);
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
     @Delete('comment/:id')

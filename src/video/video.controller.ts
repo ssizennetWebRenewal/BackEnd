@@ -4,7 +4,9 @@ import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { Roles, RolesGuard } from 'src/guards/roles.guard';
 import { ApproveVideoDto, CreateVideoDto, GetVideoDto, UpdateVideoDto, VideoResponseDto } from './dto/video.dto';
 import { CustomRequest } from './interface/video.interface';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Video')
 @Controller('video')
 export class VideoController {
     constructor(
@@ -22,6 +24,7 @@ export class VideoController {
         };
     }
 
+    @ApiBearerAuth('access')
     @Put('regVideo')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자')
@@ -29,6 +32,7 @@ export class VideoController {
         return this.videoService.regVideo(createVideoDto, req.user);
     }
 
+    @ApiBearerAuth('access')
     @Patch('updateVideo/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '영상관리자')
@@ -40,6 +44,7 @@ export class VideoController {
         return this.videoService.updateVideo(id, updateVideoDto, req.user);
     }
 
+    @ApiBearerAuth('access')
     @Patch('approveVideo/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('영상관리자')
@@ -57,6 +62,7 @@ export class VideoController {
         return this.videoService.findOne(id);
     }
 
+    @ApiBearerAuth('access')
     @Delete('deleteVideo/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '영상관리자')

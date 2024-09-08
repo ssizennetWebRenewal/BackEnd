@@ -19,7 +19,14 @@ async function bootstrap() {
     .setTitle('Project-Re API')
     .setDescription('Project-Re API 명세서')
     .setVersion('1.0.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access',
+    )
     .addTag('swagger')
     .build();
   const document = SwaggerModule.createDocument(app, config);

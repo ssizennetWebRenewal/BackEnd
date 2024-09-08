@@ -1,13 +1,15 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ManageService } from './manage.service';
-import { ApiBody, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { Roles, RolesGuard } from 'src/guards/roles.guard';
 
+@ApiTags('Manage')
 @Controller('manage')
 export class ManageController {
   constructor(private readonly settingsService: ManageService) {}
 
+  @ApiBearerAuth('access')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('웹사이트관리자')
   @Post()
@@ -48,6 +50,7 @@ export class ManageController {
     return this.settingsService.getSetting(categoryType, category);
   }
 
+  @ApiBearerAuth('access')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('웹사이트관리자')
   @Put(':categoryType/:category')
@@ -77,6 +80,7 @@ export class ManageController {
     return this.settingsService.updateSetting(categoryType, category, items);
   }
 
+  @ApiBearerAuth('access')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('웹사이트관리자')
   @Delete(':categoryType/:category')

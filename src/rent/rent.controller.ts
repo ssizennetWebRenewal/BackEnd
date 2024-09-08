@@ -2,16 +2,18 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, Req, Res
 import { RentService } from './rent.service';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
 import { Roles, RolesGuard } from 'src/guards/roles.guard';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplyRentDto, ApproveRentDto, UpdateRentDto } from './dto/rent.dto';
 import { Response } from 'express';
 
+@ApiTags('Rent')
 @Controller('rent')
 export class RentController {
     constructor(
         private readonly rentService: RentService,
     ) {}
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자')
     @Put('applyRent')
@@ -57,6 +59,7 @@ export class RentController {
         return res.status(200).json(rent);
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '장비관리자')
     @Patch('updateRent/:id')
@@ -73,6 +76,7 @@ export class RentController {
         return res.status(200).json({ message: '대여 수정 완료' });
     }
 
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('장비관리자')
     @Post('approveRent')
@@ -84,7 +88,8 @@ export class RentController {
         await this.rentService.approveRent(approveRentDto);
         return res.status(200).json({ message: '대여 승인 완료' });
     }
-
+    
+    @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '장비관리자')
     @Delete('deleteRent/:id')

@@ -117,7 +117,7 @@ export class LoginUserDto extends PickType(UserDto, ["id", "password"] as const)
 
 export class UpdateUserDto extends PartialType(
     OmitType(UserDto, ['id', 'createdAt', 'updatedAt', 'password'] as const)
-  ) {}
+) {}
 
 export class refreshTokenDto {
     @ApiProperty({

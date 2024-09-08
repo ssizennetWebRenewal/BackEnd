@@ -4,6 +4,7 @@ import { RentsSchema } from 'src/schemas/Rents.schema';
 import { ApplyRentDto, ApproveRentDto, UpdateRentDto } from './dto/rent.dto';
 import { model } from 'dynamoose';
 import { v4 as uuidv4 } from 'uuid';
+import * as moment from 'moment';
 
 @Injectable()
 export class RentService {
@@ -63,10 +64,14 @@ export class RentService {
     }
 
     async monthRented(year: number, month: number): Promise<any[]> {
-        const yearMonth = `${year}-${String(month).padStart(2, '0')}`;
-        const rents = await this.RentsModel.query("yearMonth")
-            .eq(yearMonth)
-            .using("yearMonthIndex")
+        const startOfMonth = moment(`${year}-${month}`, "YYYY-MM").startOf('month').valueOf();
+        const endOfMonth = moment(`${year}-${month}`, "YYYY-MM").endOf('month').valueOf();
+        
+        const rents = await this.RentsModel.query("constTrue")
+            .eq(1)
+            .where("combinedDate")
+            .between(`${startOfMonth}#0000000000000`, `${endOfMonth}#9999999999999`)
+            .using("DateIndex")
             .exec();
 
         if (rents.length === 0) {

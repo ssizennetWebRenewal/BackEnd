@@ -143,8 +143,8 @@ export class AuthService {
         };
         const access = this.jwtService.sign(accessPayload, { expiresIn: "30m" });
         const refresh = this.jwtService.sign(refreshPayload, { expiresIn: "3d" });
-
-        await this.RefreshTokenModel.update({
+        console.log(`refresh: ${refresh}`);
+        let sto = await this.RefreshTokenModel.update({
             id: storedToken.id,
             token: refresh,
             authority: storedToken.authority,

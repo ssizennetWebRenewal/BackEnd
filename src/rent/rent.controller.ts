@@ -16,7 +16,7 @@ export class RentController {
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자')
-    @Put('applyRent')
+    @Put('rent')
     @ApiOperation({ summary: '대여 신청', description: '대여 신청을 처리합니다.' })
     @ApiBody({ type: ApplyRentDto })
     @ApiResponse({ status: 201, description: '대여 신청 완료' })
@@ -28,7 +28,7 @@ export class RentController {
         });
     }
     
-    @Get('monthRented')
+    @Get('monthRent')
     @ApiOperation({ summary: '특정 달의 대여 정보 조회', description: '특정 달에 있는 대여 정보를 반환합니다.' })
     @ApiResponse({ status: 200, description: '대여 정보 반환' })
     @ApiResponse({ status: 204, description: '선택한 달에 대여 정보가 없습니다.' })
@@ -37,7 +37,7 @@ export class RentController {
         return res.status(200).json(rents);
     }
 
-    @Get('getRent')
+    @Get('rent')
     @ApiOperation({ summary: '대여 목록 조회', description: '특정 대여 목록을 최신순으로 반환합니다.' })
     @ApiResponse({ status: 200, description: '대여 목록 반환' })
     @ApiResponse({ status: 204, description: '대여 정보가 없습니다.' })
@@ -62,7 +62,7 @@ export class RentController {
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '장비관리자')
-    @Patch('updateRent/:id')
+    @Patch('rent/:id')
     @ApiOperation({ summary: '대여 수정', description: '대여 정보를 수정합니다.' })
     @ApiBody({ type: UpdateRentDto })
     @ApiResponse({ status: 200, description: '대여 수정 완료' })
@@ -92,7 +92,7 @@ export class RentController {
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '장비관리자')
-    @Delete('deleteRent/:id')
+    @Delete('rent/:id')
     @ApiOperation({ summary: '대여 삭제', description: '대여 정보를 삭제합니다.' })
     @ApiResponse({ status: 200, description: '대여 삭제 완료' })
     async deleteRent(@Param('id') id: string, @Res() res: Response, @Req() req: CustomRequest) {

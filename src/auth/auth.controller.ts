@@ -14,7 +14,7 @@ export class AuthController {
         private readonly authService: AuthService,
     ) {}
 
-    @Put('signup')
+    @Post('signup')
     @ApiOperation({summary: '회원가입', description: 'User 정보를 생성한다.'})
     @ApiBody({type: CreateUserDto})
     async signup(@Body() body: CreateUserDto, @Res() res: Response) {
@@ -60,7 +60,7 @@ export class AuthController {
 
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard)
-    @Patch('updateProfile')
+    @Patch('profile')
     @ApiOperation({ summary: '유저 정보 수정', description: '사용자의 프로필 정보를 수정한다.' })
     @ApiBody({ type: UpdateUserDto })
     async updateProfile(@Body() body: UpdateUserDto, @Req() req: Request, @Res() res: Response) {
@@ -70,7 +70,7 @@ export class AuthController {
 
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard)
-    @Patch('changePassword')
+    @Patch('password')
     @ApiOperation({ summary: '비밀번호 변경', description: '사용자의 비밀번호를 변경한다.' })
     @ApiBody({ type: ChangePasswordDto })
     async changePassword(@Body() body: ChangePasswordDto, @Req() req: Request, @Res() res: Response) {
@@ -80,7 +80,7 @@ export class AuthController {
 
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard)
-    @Post('uploadProfileImage')
+    @Post('profileImage')
     @UseInterceptors(FileInterceptor('file'))
     @ApiConsumes('multipart/form-data')
     @ApiBody({
@@ -103,7 +103,7 @@ export class AuthController {
 
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard)
-    @Delete('deleteProfileImage')
+    @Delete('profileImage')
     @ApiOperation({ summary: '프로필 이미지 삭제', description: '사용자의 프로필 이미지를 삭제한다.' })
     async deleteProfileImage(@Req() req: Request, @Res() res: Response) {
         await this.authService.deleteProfileImage(req.user);
@@ -112,7 +112,7 @@ export class AuthController {
 
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard)
-    @Delete('deleteAccount')
+    @Delete('account')
     @ApiOperation({ summary: '회원 탈퇴', description: '사용자의 계정을 삭제합니다.' })
     async deleteAccount(@Req() req: Request, @Res() res: Response) {
         await this.authService.deleteAccount(req.user);

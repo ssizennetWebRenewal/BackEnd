@@ -13,7 +13,7 @@ export class VideoController {
         private videoService: VideoService
     ) {}
 
-    @Get('video-details')
+    @Get('videoDetails')
     async getVideoDetails(@Query('url') url: string) {
         const videoDetails = await this.videoService.getVideoInfo(url);
         return {
@@ -25,7 +25,7 @@ export class VideoController {
     }
 
     @ApiBearerAuth('access')
-    @Put('regVideo')
+    @Put('video')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자')
     async regVideo(@Body() createVideoDto: CreateVideoDto, @Req() req: CustomRequest) {
@@ -33,7 +33,7 @@ export class VideoController {
     }
 
     @ApiBearerAuth('access')
-    @Patch('updateVideo/:id')
+    @Patch('video/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '영상관리자')
     async updateVideo(

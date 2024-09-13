@@ -67,16 +67,23 @@ export class PostController {
     async deletePost(@Param('id') id: string, @Req() req: CustomRequest) {
         return this.postService.deletePost(id, req.user);
     }
-
+}
+@ApiTags('Comment')
+@Controller('comment')
+export class CommentController {
+    constructor(
+        private readonly postService: PostService,
+    ) {}
+    
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
-    @Put('comment')
+    @Put('')
     async createComment(@Body() createCommentDto: CreateCommentDto, @Req() req: CustomRequest) {
         return this.postService.createComment(createCommentDto, req.user);
     }
 
-    @Get('comment/:noticeId')
+    @Get(':noticeId')
     async getComments(@Param('noticeId') noticeId: string) {
         return this.postService.getComments(noticeId);
     }
@@ -84,7 +91,7 @@ export class PostController {
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
-    @Patch('comment/:id')
+    @Patch(':id')
     async updateComment(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto, @Req() req: CustomRequest) {
         return this.postService.updateComment(id, updateCommentDto, req.user);
     }
@@ -92,7 +99,7 @@ export class PostController {
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
-    @Delete('comment/:id')
+    @Delete(':id')
     async deleteComment(@Param('id') id: string, @Req() req: CustomRequest) {
         return this.postService.deleteComment(id, req.user);
     }

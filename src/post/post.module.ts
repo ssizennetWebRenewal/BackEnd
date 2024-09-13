@@ -1,5 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { PostController } from './post.controller';
+import { CommentController, PostController } from './post.controller';
 import { PostService } from './post.service';
 import { DynamooseModule } from 'nestjs-dynamoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -25,7 +25,7 @@ import { AppModule } from 'src/app.module';
     ]),
     forwardRef(() => AppModule),
   ],
-  controllers: [PostController],
+  controllers: [PostController, CommentController],
   providers: [PostService]
 })
 export class PostModule {}

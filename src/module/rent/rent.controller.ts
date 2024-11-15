@@ -16,7 +16,7 @@ export class RentController {
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자')
-    @Put('rent')
+    @Post('rent')
     @ApiOperation({ summary: '대여 신청', description: '대여 신청을 처리합니다.' })
     @ApiBody({ type: ApplyRentDto })
     @ApiResponse({ status: 201, description: '대여 신청 완료' })
@@ -26,15 +26,6 @@ export class RentController {
         message: '대여 신청 완료',
         rent: newRent,
         });
-    }
-    
-    @Get('monthRent')
-    @ApiOperation({ summary: '특정 달의 대여 정보 조회', description: '특정 달에 있는 대여 정보를 반환합니다.' })
-    @ApiResponse({ status: 200, description: '대여 정보 반환' })
-    @ApiResponse({ status: 204, description: '선택한 달에 대여 정보가 없습니다.' })
-    async monthRented(@Query('year') year: number, @Query('month') month: number, @Res() res: Response) {
-        const rents = await this.rentService.monthRented(year, month);
-        return res.status(200).json(rents);
     }
 
     @Get('rent')
@@ -46,6 +37,15 @@ export class RentController {
         const countNumber = parseInt(count, 10) || 10;
 
         const rents = await this.rentService.getRent(pageNumber, countNumber);
+        return res.status(200).json(rents);
+    }
+    
+    @Get('monthRent')
+    @ApiOperation({ summary: '특정 달의 대여 정보 조회', description: '특정 달에 있는 대여 정보를 반환합니다.' })
+    @ApiResponse({ status: 200, description: '대여 정보 반환' })
+    @ApiResponse({ status: 204, description: '선택한 달에 대여 정보가 없습니다.' })
+    async monthRented(@Query('year') year: number, @Query('month') month: number, @Res() res: Response) {
+        const rents = await this.rentService.monthRented(year, month);
         return res.status(200).json(rents);
     }
     

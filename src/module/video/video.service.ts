@@ -4,7 +4,7 @@ import { google, youtube_v3 } from 'googleapis';
 import { ApproveVideoDto, CreateVideoDto, GetVideoDto, UpdateVideoDto, VideoResponseDto } from './dto/video.dto';
 import { InjectModel } from 'nestjs-dynamoose';
 import { model } from 'dynamoose';
-import { VideosSchema } from 'src/schemas/Videos.schema';
+import { VideosSchema } from 'src/model/schemas/Videos.schema';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()

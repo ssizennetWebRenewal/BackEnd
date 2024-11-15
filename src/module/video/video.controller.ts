@@ -13,7 +13,7 @@ export class VideoController {
         private videoService: VideoService
     ) {}
 
-    @Get('videoDetails')
+    @Get('details')
     async getVideoDetails(@Query('url') url: string) {
         const videoDetails = await this.videoService.getVideoInfo(url);
         return {
@@ -25,7 +25,7 @@ export class VideoController {
     }
 
     @ApiBearerAuth('access')
-    @Put('video')
+    @Post('')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자')
     async regVideo(@Body() createVideoDto: CreateVideoDto, @Req() req: CustomRequest) {
@@ -33,7 +33,7 @@ export class VideoController {
     }
 
     @ApiBearerAuth('access')
-    @Patch('video/:id')
+    @Patch('/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '영상관리자')
     async updateVideo(
@@ -45,25 +45,25 @@ export class VideoController {
     }
 
     @ApiBearerAuth('access')
-    @Patch('approveVideo/:id')
+    @Post('approve/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('영상관리자')
     async approveVideo(@Param('id') id: string, @Body() approveVideoDto: ApproveVideoDto, @Req() req: CustomRequest) {
         return this.videoService.approveVideo(id, approveVideoDto, req.user);
     }
 
-    @Get('getVideo')
+    @Get('')
     async getVideo(@Query() getVideoDto: GetVideoDto) {
         return this.videoService.getVideo(getVideoDto);
     }
 
-    @Get('video/:id')
+    @Get('/:id')
     async findOne(@Param('id') id: string) {
         return this.videoService.findOne(id);
     }
 
     @ApiBearerAuth('access')
-    @Delete('deleteVideo/:id')
+    @Delete('/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '영상관리자')
     async deleteVideo(@Param('id') id: string,@Req() req: CustomRequest) {

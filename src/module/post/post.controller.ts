@@ -17,7 +17,7 @@ export class PostController {
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
-    @Put()
+    @Post()
     @UseInterceptors(FilesInterceptor('files'))
     async createPost(@Body() createPostDto: CreatePostDto, @Req() req: CustomRequest, @UploadedFiles() files?: Express.Multer.File[]) {
         return this.postService.createPost(createPostDto, req.user, files);
@@ -78,7 +78,7 @@ export class CommentController {
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자', '게시판관리자')
-    @Put('')
+    @Post('')
     async createComment(@Body() createCommentDto: CreateCommentDto, @Req() req: CustomRequest) {
         return this.postService.createComment(createCommentDto, req.user);
     }

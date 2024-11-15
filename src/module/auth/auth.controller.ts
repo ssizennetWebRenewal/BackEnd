@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, HttpCode, Patch, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Patch, Post, Put, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ChangePasswordDto, CreateUserDto, LoginUserDto, UpdateUserDto, refreshTokenDto } from 'src/auth/dto/user.dto';
+import { ChangePasswordDto, CreateUserDto, LoginUserDto, UpdateUserDto, refreshTokenDto } from 'src/module/auth/dto/user.dto';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt.guard';
@@ -51,7 +51,7 @@ export class AuthController {
     @ApiBearerAuth('access')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles('사용자')
-    @Post('profile')
+    @Get('profile')
     @ApiOperation({summary: '프로필 조회', description: 'jwt로 사용자의 프로필을 조회한다. '})
     async profile(@Req() req: Request, @Res() res: Response) {
         let profile = await this.authService.profile(req);

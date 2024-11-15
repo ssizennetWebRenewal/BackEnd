@@ -3,7 +3,7 @@ import { RentService } from './rent.service';
 import { RentController } from './rent.controller';
 import { DynamooseModule } from 'nestjs-dynamoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RentsSchema } from 'src/schemas/Rents.schema';
+import { RentsSchema } from 'src/model/schemas/Rents.schema';
 import { DynamooseConfigService } from 'src/dynamoose-config.service';
 
 @Module({

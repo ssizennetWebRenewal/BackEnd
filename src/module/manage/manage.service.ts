@@ -1,7 +1,7 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { model } from 'dynamoose';
 import { InjectModel } from 'nestjs-dynamoose';
-import { SettingsSchema } from 'src/schemas/Settings.schema';
+import { SettingsSchema } from 'src/model/schemas/Settings.schema';
 
 @Injectable()
 export class ManageService {

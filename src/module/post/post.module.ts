@@ -4,8 +4,8 @@ import { PostService } from './post.service';
 import { DynamooseModule } from 'nestjs-dynamoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DynamooseConfigService } from 'src/dynamoose-config.service';
-import { PostsSchema } from 'src/schemas/Posts.schema';
-import { CommentsSchema } from 'src/schemas/Comments.schema';
+import { PostsSchema } from 'src/model/schemas/Posts.schema';
+import { CommentsSchema } from 'src/model/schemas/Comments.schema';
 import { AppModule } from 'src/app.module';
 
 @Module({

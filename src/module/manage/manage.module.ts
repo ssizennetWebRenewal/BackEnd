@@ -4,7 +4,7 @@ import { ManageService } from './manage.service';
 import { ConfigModule } from '@nestjs/config';
 import { DynamooseModule } from 'nestjs-dynamoose';
 import { JwtModule } from '@nestjs/jwt';
-import { SettingsSchema } from 'src/schemas/Settings.schema';
+import { SettingsSchema } from 'src/model/schemas/Settings.schema';
 
 @Module({
   imports: [

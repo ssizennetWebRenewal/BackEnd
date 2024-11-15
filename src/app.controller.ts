@@ -4,7 +4,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { InjectModel } from 'nestjs-dynamoose';
 import { model } from 'dynamoose';
-import { SettingsSchema } from './schemas/Settings.schema';
+import { SettingsSchema } from './model/schemas/Settings.schema';
 
 @Controller()
 export class AppController {

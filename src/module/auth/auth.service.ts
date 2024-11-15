@@ -2,15 +2,15 @@ import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { model } from 'dynamoose';
 import { InjectModel } from 'nestjs-dynamoose';
-import { ChangePasswordDto, CreateUserDto, LoginUserDto, UpdateUserDto, refreshTokenDto } from 'src/auth/dto/user.dto';
-import { UsersSchema } from 'src/schemas/Users.schema';
+import { ChangePasswordDto, CreateUserDto, LoginUserDto, UpdateUserDto, refreshTokenDto } from 'src/module/auth/dto/user.dto';
+import { UsersSchema } from 'src/model/schemas/Users.schema';
 import * as bcrypt from 'bcrypt';
 import * as dynamoose from 'dynamoose';
-import { SettingsSchema } from 'src/schemas/Settings.schema';
+import { SettingsSchema } from 'src/model/schemas/Settings.schema';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { AppService } from 'src/app.service';
-import { RefreshTokenSchema } from 'src/schemas/RefreshToken.schema';
+import { RefreshTokenSchema } from 'src/model/schemas/RefreshToken.schema';
 
 @Injectable()
 export class AuthService {
@@ -28,26 +28,21 @@ export class AuthService {
     ) {}
     
     async signup(data: CreateUserDto) {
-        let user = (await this.UsersModel.query('id').eq(data.id).exec())[0];
-        if (user) {
-            throw new HttpException('해당 id를 가진 사용자가 이미 존재합니다. ', 409);
+        const existingUser = await this.UsersModel.query('id').eq(data.id).exec();
+        if (existingUser.length > 0) {
+            throw new HttpException('해당 ID를 가진 사용자가 이미 존재합니다.', 409);
         }
-
+        
         let isPasswordStrong: boolean = this.checkPasswordStrength(data.password.toString());
         if (!isPasswordStrong) {
             throw new HttpException('비밀번호가 강력하지 않습니다. ', 400);
         }
 
-        this.logger.log(`User ${data.id} signed up`);
         const salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(data.password, salt);
-        let newUser = new this.UsersModel({
-            ...data,
-            password: hashedPassword,
-            responsibility: [],
-            approval: true, //나중에 false로 바꿔야 함. 
-        })
+        data.password = await bcrypt.hash(data.password, salt);
         
+        const newUser = new this.UsersModel(data);
+
         return await dynamoose.transaction([
             this.UsersModel.transaction.create(newUser)
         ]);
@@ -100,7 +95,7 @@ export class AuthService {
         };
     }
 
-    checkPasswordStrength(password: string): boolean {
+    private checkPasswordStrength(password: string): boolean {
         let min_password = 8;
         let max_password = 256;
         if (password.length < min_password || password.length > max_password) {

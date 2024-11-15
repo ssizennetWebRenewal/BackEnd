@@ -1,7 +1,7 @@
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { v4 as uuidv4 } from 'uuid';
+import { v7 } from 'uuid';
 
 @Injectable()
 export class AppService {
@@ -22,11 +22,10 @@ export class AppService {
     return 'Hello World!';
   }
 
-  private readonly AWS_S3_BUCKET = 'ssizennet-storage-bucket';
   private readonly s3Client: S3Client;
 
   async uploadFile(file: Express.Multer.File): Promise<any> {
-    const fileKey = `${uuidv4()}-${file.originalname}`;
+    const fileKey = `${v7()}-${file.originalname}`;
 
     const command = new PutObjectCommand({
       Bucket: this.configService.get('AWS_S3_BUCKET'),

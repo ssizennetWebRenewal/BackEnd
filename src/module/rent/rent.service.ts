@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from 'nestjs-dynamoose';
-import { RentsSchema } from 'src/schemas/Rents.schema';
+import { RentsSchema } from 'src/model/schemas/Rents.schema';
 import { ApplyRentDto, ApproveRentDto, UpdateRentDto } from './dto/rent.dto';
 import { model } from 'dynamoose';
 import { v4 as uuidv4 } from 'uuid';

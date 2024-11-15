@@ -1,9 +1,9 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { CreatePostDto, UpdatePostDto } from './dto/posts.dto';
 import { InjectModel, ObjectType } from 'nestjs-dynamoose';
-import { PostsSchema } from 'src/schemas/Posts.schema';
+import { PostsSchema } from 'src/model/schemas/Posts.schema';
 import { model } from 'dynamoose';
-import { CommentsSchema } from 'src/schemas/Comments.schema';
+import { CommentsSchema } from 'src/model/schemas/Comments.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateCommentDto, UpdateCommentDto } from './dto/comments.dto';
 import { AppService } from 'src/app.service';

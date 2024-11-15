@@ -5,7 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { DynamooseModule } from 'nestjs-dynamoose';
 import { ConfigModule } from '@nestjs/config';
-import { VideosSchema } from 'src/schemas/Videos.schema';
+import { VideosSchema } from 'src/model/schemas/Videos.schema';
 import { AppModule } from 'src/app.module';
 
 @Module({

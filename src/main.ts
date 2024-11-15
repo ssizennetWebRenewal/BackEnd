@@ -3,8 +3,8 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
-async function bootstrap() {    
-  const app = await NestFactory.create(AppModule, {});
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule, { logger: ['log', 'error', 'warn', 'debug', 'verbose'] });
   
   const corsOptions: CorsOptions = {
     origin: '*',
@@ -18,7 +18,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Project-Re API')
     .setDescription('Project-Re API 명세서')
-    .setVersion('1.0.0')
+    .setVersion('0.0.1')
     .addBearerAuth(
       {
         type: 'http',

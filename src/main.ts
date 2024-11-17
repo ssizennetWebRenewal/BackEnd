@@ -16,8 +16,8 @@ async function bootstrap() {
   app.enableCors(corsOptions);
 
   const config = new DocumentBuilder()
-    .setTitle('Project-Re API')
-    .setDescription('Project-Re API 명세서')
+    .setTitle('씨즌넷 웹리뉴얼 API')
+    .setDescription('씨즌넷 웹리뉴얼 API 명세서')
     .setVersion('0.0.1')
     .addBearerAuth(
       {

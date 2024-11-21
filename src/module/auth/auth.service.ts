@@ -122,7 +122,7 @@ export class AuthService {
         let storedToken = (await this.RefreshTokenModel.query('id').eq(id).exec())[0];
         if (!storedToken) {
             throw new HttpException('Invalid refresh token', 401);
-        } else if (storedToken.refresh != refreshToken.refresh) {
+        } else if (decodeToken.refresh != refreshToken.refresh) {
             this.logger.warn(`Invalid refresh token tried`);
             await this.RefreshTokenModel.delete({ id: storedToken.id });
             throw new HttpException('The attempt to issue a token is invalid', 401);

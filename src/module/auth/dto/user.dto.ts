@@ -96,19 +96,19 @@ export class UserDto {
 
     @ApiProperty({
         description: "생성 날짜",
-        example: "2024-08-15T10:00:00Z",
+        example: 1725977240743,
     })
-    @Type(() => Date)
+    @Type(() => Number)
     @IsNotEmpty()
-    createdAt: Date = new Date("2024-08-15T10:00:00Z");
+    createdAt: number = Date.now();
 
     @ApiProperty({
         description: "수정 날짜",
-        example: "2024-08-16T10:00:00Z",
+        example: 1725977240743,
     })
-    @Type(() => Date)
+    @Type(() => Number)
     @IsNotEmpty()
-    updatedAt: Date = new Date("2024-08-16T10:00:00Z");
+    updatedAt: number = Date.now();
 }
 
 export class CreateUserDto extends OmitType(UserDto, ["responsibility", "createdAt", "updatedAt", "approval", "photo"] as const) {}

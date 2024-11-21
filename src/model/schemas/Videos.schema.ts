@@ -45,4 +45,9 @@ export const VideosSchema = new BaseSchema({
       project: ['uploadDate', 'caption', 'updatedAt', 'category', 'createdAt', 'link', 'thumbnail', 'id', 'title'],
     },
   },
+  approved: {
+    type: Number,
+    default: 0,
+    required: true,
+  },
 });

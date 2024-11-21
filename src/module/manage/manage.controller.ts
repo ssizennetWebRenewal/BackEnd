@@ -39,13 +39,13 @@ export class ManageController {
     return this.settingsService.createSetting(categoryType, category, items);
   }
   
-  @Get(':categoryType/:category')
+  @Get(':categoryType/:category?')
   @ApiOperation({ summary: '설정 조회', description: '카테고리 타입과 카테고리에 해당하는 설정을 조회한다.' })
   @ApiParam({ name: 'categoryType', description: '카테고리 타입', type: 'string' })
-  @ApiParam({ name: 'category', description: '카테고리 이름', type: 'string' })
+  @ApiParam({ name: 'category', description: '카테고리 이름', type: 'string', required: false })
   async getSetting(
     @Param('categoryType') categoryType: string,
-    @Param('category') category: string,
+    @Param('category') category?: string,
   ) {
     return this.settingsService.getSetting(categoryType, category);
   }

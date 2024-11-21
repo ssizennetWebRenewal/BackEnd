@@ -58,8 +58,8 @@ export class VideoService {
       ...createVideoDto,
       id: uuidv4(),
       writer: user.id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       approved: 0, // 기본 승인 상태는 미결 (0)
     });
 
@@ -80,7 +80,7 @@ export class VideoService {
   }
 
   async updateVideo(id: string, updateVideoDto: UpdateVideoDto, user: any): Promise<VideoResponseDto> {
-    const video = await this.videoModel.get(id);
+    const video = await this.videoModel.query('id').eq(id).exec().then((res) => res[0]);
     if (!video) {
       throw new HttpException('해당 비디오를 찾을 수 없습니다.', 404);
     }
@@ -90,7 +90,7 @@ export class VideoService {
     }
 
     Object.assign(video, updateVideoDto);
-    video.updatedAt = new Date();
+    video.updatedAt = new Date().toISOString();
 
     await video.save();
 
@@ -110,7 +110,7 @@ export class VideoService {
   }
   
   async approveVideo(id: string, approveVideoDto: ApproveVideoDto, user: any): Promise<VideoResponseDto> {
-      const video = await this.videoModel.get(id);
+      const video = (await this.videoModel.query('id').eq(id).exec().then((res) => res[0]));
       if (!video) {
         throw new HttpException('해당 비디오를 찾을 수 없습니다.', 404);
       }
@@ -119,7 +119,7 @@ export class VideoService {
       }
   
       video.approved = approveVideoDto.approved;
-      video.updatedAt = new Date();
+      video.updatedAt = new Date().toISOString();
       await video.save();
       return {
         id: video.id,
@@ -153,7 +153,7 @@ export class VideoService {
   }
 
   async findOne(id: string): Promise<VideoResponseDto> {
-    const video = await this.videoModel.get(id);
+    const video = (await this.videoModel.query('id').eq(id).exec().then((res) => res[0]));
     if (!video) {
       throw new HttpException('해당 비디오를 찾을 수 없습니다.', 404);
     }
@@ -172,7 +172,7 @@ export class VideoService {
   }
 
   async deleteVideo(id: string, user: any): Promise<void> {
-    const video = await this.videoModel.get(id);
+    const video = await this.videoModel.query('id').eq(id).exec().then((res) => res[0]);
     if (!video) {
       throw new HttpException('해당 비디오를 찾을 수 없습니다.', 404);
     }

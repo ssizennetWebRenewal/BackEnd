@@ -37,11 +37,9 @@ export const UsersSchema = new BaseSchema({
     required: true,
   },
   comments: {
-    type: String,
-    required: true,
+    type: String
   },
   photo: {
-    type: String,
-    required: false,
+    type: String
   },
 });

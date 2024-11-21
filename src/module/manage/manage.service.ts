@@ -20,12 +20,16 @@ export class ManageService {
     return await newSetting.save();
   }
   
-  async getSetting(categoryType: string, category: string): Promise<any> {
-    const setting = await this.settingsModel.get({ categoryType, category });
-    if (!setting) {
+  async getSetting(categoryType: string, category?: string): Promise<any> {
+    const settings = await this.settingsModel
+      .query('categoryType')
+      .using('CategoryTypeIndex')
+      .eq(categoryType)
+      .exec();
+    if (!settings) {
       throw new HttpException('Setting not found', 404);
     }
-    return setting;
+    return settings;
   }
 
   async updateSetting(categoryType: string, category: string, items: any[]): Promise<any> {

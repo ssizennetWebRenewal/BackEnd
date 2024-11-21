@@ -42,6 +42,8 @@ export class AuthService {
         data.password = await bcrypt.hash(data.password, salt);
         
         const newUser = new this.UsersModel(data);
+        
+        console.log(newUser);
 
         return await dynamoose.transaction([
             this.UsersModel.transaction.create(newUser)
@@ -138,7 +140,6 @@ export class AuthService {
         };
         const access = this.jwtService.sign(accessPayload, { expiresIn: "30m" });
         const refresh = this.jwtService.sign(refreshPayload, { expiresIn: "3d" });
-        console.log(`refresh: ${refresh}`);
         let sto = await this.RefreshTokenModel.update({
             id: storedToken.id,
             token: refresh,

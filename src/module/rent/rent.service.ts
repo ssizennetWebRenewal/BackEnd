@@ -105,7 +105,7 @@ export class RentService {
     }
 
     async getRentById(id: string): Promise<any> {
-        const rent = await this.RentsModel.get({ id });
+        const rent = await this.RentsModel.query("id").eq(id).exec().then((res) => res[0]);
         if (!rent) {
             throw new HttpException('대여 정보를 찾을 수 없습니다.', 404);
         }
@@ -113,7 +113,7 @@ export class RentService {
     }
 
     async updateRent(id: string, updateRentDto: UpdateRentDto, user: any): Promise<void> {
-        const rent = await this.RentsModel.get(id);
+        const rent = await this.RentsModel.query("id").eq(id).exec().then((res) => res[0]);
         if (!rent) {
             throw new HttpException('대여 정보를 찾을 수 없습니다.', 404);
         } else if (user.role === '사용자' && rent.applicantId !== user.id) {
@@ -140,7 +140,7 @@ export class RentService {
 
     async approveRent(approveRentDto: ApproveRentDto): Promise<void> {
         const { id, approved } = approveRentDto;
-        const rent = await this.RentsModel.get(id);
+        const rent = await this.RentsModel.query("id").eq(id).exec().then((res) => res[0]);
         if (!rent) {
             throw new HttpException('대여 정보를 찾을 수 없습니다.', 404);
         }
@@ -157,7 +157,7 @@ export class RentService {
     }
 
     async deleteRent(id: string, user: any): Promise<void> {
-        const rent = await this.RentsModel.get(id);
+        const rent = await this.RentsModel.query("id").eq(id).exec().then((res) => res[0]);
         if (!rent) {
             throw new HttpException('대여 정보를 찾을 수 없습니다.', 404);
         }

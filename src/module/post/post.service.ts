@@ -40,8 +40,6 @@ export class PostService {
       registrantId: user.id,
       registrantName: user.name,
       downloadCount: 0,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
       constTrue: 1,
     });
     
@@ -74,7 +72,7 @@ export class PostService {
   }
 
   async getPost(id: string): Promise<any> {
-    const post = await this.postModel.get(id);
+    const post = await this.postModel.query("id").eq(id).exec().then((res) => res[0]);
     if (!post) {
       throw new HttpException('게시글을 찾을 수 없습니다.', 404);
     }
@@ -82,7 +80,7 @@ export class PostService {
   }
 
   async updatePost(id: string, updatePostDto: UpdatePostDto, user: any): Promise<any> {
-    const post = await this.postModel.get(id);
+    const post = await this.postModel.query("id").eq(id).exec().then((res) => res[0]);
     if (!post) {
       throw new HttpException('게시글을 찾을 수 없습니다.', 404);
     }
@@ -92,14 +90,14 @@ export class PostService {
     }
     
     Object.assign(post, updatePostDto);
-    post.updatedAt = Date.now();
+    post.updatedAt = new Date().toISOString();
     await post.save();
     this.logger.log(`게시글 수정: ${post.id}`);
     return post;
   }
 
   async addFiles(id: string, files: Express.Multer.File[], user: any): Promise<any> {
-    const post = await this.postModel.get(id);
+    const post = await this.postModel.query("id").eq(id).exec().then((res) => res[0]);
     if (!post) {
       throw new HttpException('게시글을 찾을 수 없습니다.', 404);
     }
@@ -115,13 +113,13 @@ export class PostService {
     }
 
     post.filePaths = filePaths;
-    post.updatedAt = Date.now();
+    post.updatedAt = new Date().toISOString();
     await post.save();
     return post;
   }
 
   async removeFiles(id: string, filesToRemove: string[], user: any): Promise<any> {
-    const post = await this.postModel.get(id);
+    const post = await this.postModel.query("id").eq(id).exec().then((res) => res[0]);
     if (!post) {
       throw new HttpException('게시글을 찾을 수 없습니다.', 404);
     }
@@ -142,13 +140,13 @@ export class PostService {
       return !shouldDelete;
     });
 
-    post.updatedAt = Date.now();
+    post.updatedAt = new Date().toISOString();
     await post.save();
     return post;
 }
 
   async deletePost(id: string, user: any): Promise<void> {
-    const post = await this.postModel.get(id);
+    const post = await this.postModel.query("id").eq(id).exec().then((res) => res[0]);
     if (!post) {
       throw new HttpException('게시글을 찾을 수 없습니다.', 404);
     }
@@ -179,8 +177,8 @@ export class PostService {
       body: createCommentDto.body,
       userId: user.id,
       userName: user.name,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     });
 
     await newComment.save();
@@ -196,7 +194,7 @@ export class PostService {
   }
 
   async updateComment(id: string, updateCommentDto: UpdateCommentDto, user: any): Promise<any> {
-    const comment = await this.commentModel.get(id);
+    const comment = await this.commentModel.query("id").eq(id).exec().then((res) => res[0]);
     if (!comment) {
       throw new HttpException('댓글을 찾을 수 없습니다.', 404);
     }
@@ -206,13 +204,13 @@ export class PostService {
     }
 
     Object.assign(comment, updateCommentDto);
-    comment.updatedAt = Date.now();
+    comment.updatedAt = new Date().toISOString();;
     await comment.save();
     return comment;
   }
 
   async deleteComment(id: string, user: any): Promise<void> {
-    const comment = await this.commentModel.get(id);
+    const comment = await this.commentModel.query("id").eq(id).exec().then((res) => res[0]);
     if (!comment) {
       throw new HttpException('댓글을 찾을 수 없습니다.', 404);
     }

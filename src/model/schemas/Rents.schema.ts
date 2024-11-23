@@ -2,11 +2,11 @@ import { BaseSchema } from './Base.schema';
 
 export const RentsSchema = new BaseSchema({
   startDate: {
-    type: Number,
+    type: String,
     required: true,
   },
   endDate: {
-    type: Number,
+    type: String,
     required: true,
   },
   team: {

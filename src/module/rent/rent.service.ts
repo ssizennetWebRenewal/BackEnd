@@ -64,13 +64,13 @@ export class RentService {
     }
 
     async monthRented(year: number, month: number): Promise<any[]> {
-        const startOfMonth = moment(`${year}-${month}`, "YYYY-MM").startOf('month').valueOf();
-        const endOfMonth = moment(`${year}-${month}`, "YYYY-MM").endOf('month').valueOf();
+        const startOfMonth = moment(`${year}-${month}`, "YYYY-MM").startOf('month').toISOString();
+        const endOfMonth = moment(`${year}-${month}`, "YYYY-MM").endOf('month').toISOString();
         
         const rents = await this.RentsModel.query("constTrue")
             .eq(1)
             .where("combinedDate")
-            .between(`${startOfMonth}#0000000000000`, `${endOfMonth}#9999999999999`)
+            .between(`${startOfMonth}#0000-00-00T00:00:00.000Z`, `${endOfMonth}#9999-99-99T99:99:99.999Z`)
             .using("DateIndex")
             .exec();
 

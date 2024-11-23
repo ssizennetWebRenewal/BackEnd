@@ -16,8 +16,8 @@ export class RentService {
       ) {}
       
     async applyRent(apply: ApplyRentDto, userId: string, userName: string): Promise<any> {
-        const startDate = new Date(apply.startDate).getTime();
-        const endDate = new Date(apply.endDate).getTime();
+        const startDate = new Date(apply.startDate).toISOString();
+        const endDate = new Date(apply.endDate).toISOString();
 
         const combinedDate = `${startDate}#${endDate}`;
 
@@ -120,9 +120,9 @@ export class RentService {
             throw new HttpException('본인이 작성한 대여만 수정할 수 있습니다.', 403);
         }
 
-        const currentTime = new Date().getTime();
-        const startTime = updateRentDto.startDate ? new Date(updateRentDto.startDate).getTime() : rent.startDate;
-        const endTime = updateRentDto.endDate ? new Date(updateRentDto.endDate).getTime() : rent.endDate;
+        const currentTime = new Date().toISOString();
+        const startTime = updateRentDto.startDate ? new Date(updateRentDto.startDate).toISOString() : rent.startDate;
+        const endTime = updateRentDto.endDate ? new Date(updateRentDto.endDate).toISOString() : rent.endDate;
 
         if (startTime < currentTime) {
             throw new HttpException('이미 시작된 대여는 수정할 수 없습니다.', 403);
@@ -145,7 +145,7 @@ export class RentService {
             throw new HttpException('대여 정보를 찾을 수 없습니다.', 404);
         }
 
-        const currentTime = new Date().getTime();
+        const currentTime = new Date().toISOString();
         
         if (rent.endDate < currentTime) {
             throw new HttpException('이미 지난 대여는 승인 상태를 변경할 수 없습니다.', 403);

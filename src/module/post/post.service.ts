@@ -1,7 +1,7 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { CreatePostDto, UpdatePostDto } from './dto/posts.dto';
 import { InjectModel, ObjectType } from 'nestjs-dynamoose';
-import { PostsSchema } from 'src/model/schemas/Posts.schema';
+import { ArticleSchema } from 'src/model/schemas/Article.schema';
 import { model } from 'dynamoose';
 import { CommentsSchema } from 'src/model/schemas/Comments.schema';
 import { v4 as uuidv4 } from 'uuid';
@@ -12,8 +12,8 @@ import { AppService } from 'src/app.service';
 export class PostService {
   private readonly logger = new Logger(PostService.name);
   constructor(
-    @InjectModel('Posts')
-    private readonly postModel = model('Posts', PostsSchema),
+    @InjectModel('Article')
+    private readonly postModel = model('Article', ArticleSchema),
     @InjectModel('Comments')
     private readonly commentModel = model('Comments', CommentsSchema),
     private readonly appService: AppService,

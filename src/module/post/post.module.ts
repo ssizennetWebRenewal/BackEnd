@@ -4,7 +4,7 @@ import { PostService } from './post.service';
 import { DynamooseModule } from 'nestjs-dynamoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DynamooseConfigService } from 'src/dynamoose-config.service';
-import { PostsSchema } from 'src/model/schemas/Posts.schema';
+import { ArticleSchema } from 'src/model/schemas/Article.schema';
 import { CommentsSchema } from 'src/model/schemas/Comments.schema';
 import { AppModule } from 'src/app.module';
 
@@ -20,7 +20,7 @@ import { AppModule } from 'src/app.module';
       inject: [ConfigService],
     }),
     DynamooseModule.forFeature([
-      { name: 'Posts', schema: PostsSchema },
+      { name: 'Article', schema: ArticleSchema },
       { name: 'Comments', schema: CommentsSchema },
     ]),
     forwardRef(() => AppModule),

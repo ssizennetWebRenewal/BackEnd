@@ -7,8 +7,8 @@ import { CreateCommentDto, UpdateCommentDto } from './dto/comments.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Post')
-@Controller('post')
+@ApiTags('Article')
+@Controller('article')
 export class PostController {
     constructor(
         private readonly postService: PostService,

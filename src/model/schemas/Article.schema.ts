@@ -1,6 +1,6 @@
 import { BaseSchema } from './Base.schema';
 
-export const PostsSchema = new BaseSchema({
+export const ArticleSchema = new BaseSchema({
   topCategory: {
     type: String,
     required: true,

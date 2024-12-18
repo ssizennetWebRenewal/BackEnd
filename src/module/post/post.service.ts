@@ -48,7 +48,7 @@ export class PostService {
     return newPost;
   }
 
-  async getPosts(page: number, count: number): Promise<any[]> {
+  async getPosts(page: number, count: number, topCategory?: string): Promise<any[]> {
     let items: any[] = [];
     let lastEvaluatedKey: ObjectType | undefined = undefined;
     
@@ -58,6 +58,10 @@ export class PostService {
         .using("DateIndex")
         .limit(count)
         .sort("descending");
+      
+      if (topCategory) {
+        query.where("topCategory").eq(topCategory);
+      }
 
       if (lastEvaluatedKey) {
         query.startAt(lastEvaluatedKey);

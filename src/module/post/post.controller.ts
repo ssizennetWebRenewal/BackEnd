@@ -24,10 +24,14 @@ export class PostController {
     }
 
     @Get()
-    async getPosts(@Query('page') page: string, @Query('count') count: string) {
+    async getPosts(
+        @Query('page') page: string, 
+        @Query('count') count: string,
+        @Query('topCategory') topCategory?: string
+    ) {
         const pageNum: number = parseInt(page);
         const countNum: number = parseInt(count);
-        return this.postService.getPosts(pageNum, countNum);
+        return this.postService.getPosts(pageNum, countNum, topCategory);
     }
 
     @Get(':id')

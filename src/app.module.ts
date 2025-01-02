@@ -25,18 +25,16 @@ import { SettingsSchema } from './model/schemas/Settings.schema';
       useClass: DynamooseConfigService,
       inject: [ConfigService],
     }),
-    DynamooseModule.forFeature([
-      { name: "Settings", schema: SettingsSchema }
-    ]),
+    DynamooseModule.forFeature([{ name: 'Settings', schema: SettingsSchema }]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         debug: true,
         secret: configService.get('JWT_SECRET'),
-        signOptions: { expiresIn: '5m' }
+        signOptions: { expiresIn: '5m' },
       }),
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
     AuthModule,
     RentModule,
@@ -46,7 +44,7 @@ import { SettingsSchema } from './model/schemas/Settings.schema';
   ],
   controllers: [AppController, AuthController],
   providers: [AppService],
-  exports: [PassportModule, JwtModule, AppService]
+  exports: [PassportModule, JwtModule, AppService],
 })
 export class AppModule implements NestModule {
   constructor(private configService: ConfigService) {}

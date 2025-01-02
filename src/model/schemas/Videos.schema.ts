@@ -6,7 +6,17 @@ export const VideosSchema = new BaseSchema({
     required: true,
     index: {
       name: 'CategoryIndex',
-      project: ['uploadDate', 'caption', 'updatedAt', 'category', 'createdAt', 'link', 'thumbnail', 'id', 'title'],
+      project: [
+        'uploadDate',
+        'caption',
+        'updatedAt',
+        'category',
+        'createdAt',
+        'link',
+        'thumbnail',
+        'id',
+        'title',
+      ],
     },
   },
   title: {
@@ -14,7 +24,17 @@ export const VideosSchema = new BaseSchema({
     required: true,
     index: {
       name: 'TitleIndex',
-      project: ['uploadDate', 'caption', 'updatedAt', 'category', 'createdAt', 'link', 'thumbnail', 'id', 'title'],
+      project: [
+        'uploadDate',
+        'caption',
+        'updatedAt',
+        'category',
+        'createdAt',
+        'link',
+        'thumbnail',
+        'id',
+        'title',
+      ],
     },
   },
   uploadDate: {
@@ -42,7 +62,17 @@ export const VideosSchema = new BaseSchema({
     default: 1,
     index: {
       name: 'DateIndex',
-      project: ['uploadDate', 'caption', 'updatedAt', 'category', 'createdAt', 'link', 'thumbnail', 'id', 'title'],
+      project: [
+        'uploadDate',
+        'caption',
+        'updatedAt',
+        'category',
+        'createdAt',
+        'link',
+        'thumbnail',
+        'id',
+        'title',
+      ],
     },
   },
   approved: {

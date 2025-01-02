@@ -26,6 +26,6 @@ import { AppModule } from 'src/app.module';
     forwardRef(() => AppModule),
   ],
   controllers: [PostController, CommentController],
-  providers: [PostService]
+  providers: [PostService],
 })
 export class PostModule {}

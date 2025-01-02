@@ -17,12 +17,10 @@ import { DynamooseConfigService } from 'src/dynamoose-config.service';
       useClass: DynamooseConfigService,
       inject: [ConfigService],
     }),
-    DynamooseModule.forFeature([
-      { name: 'Rents', schema: RentsSchema },
-    ]),
+    DynamooseModule.forFeature([{ name: 'Rents', schema: RentsSchema }]),
   ],
   providers: [RentService],
   controllers: [RentController],
-  exports: [RentService]
+  exports: [RentService],
 })
 export class RentModule {}

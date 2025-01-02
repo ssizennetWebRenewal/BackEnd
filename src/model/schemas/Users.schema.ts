@@ -12,7 +12,7 @@ export const UsersSchema = new BaseSchema({
   approval: {
     type: Boolean,
     required: true,
-    default: true,//추후 false로 변경
+    default: true, //추후 false로 변경
   },
   department: {
     type: String,
@@ -37,9 +37,9 @@ export const UsersSchema = new BaseSchema({
     required: true,
   },
   comments: {
-    type: String
+    type: String,
   },
   photo: {
-    type: String
+    type: String,
   },
 });

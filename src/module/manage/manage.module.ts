@@ -9,16 +9,14 @@ import { SettingsSchema } from 'src/model/schemas/Settings.schema';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ".env",
+      envFilePath: '.env',
       isGlobal: true,
     }),
-    DynamooseModule.forFeature([
-      { name: "Settings", schema: SettingsSchema }
-    ]),
+    DynamooseModule.forFeature([{ name: 'Settings', schema: SettingsSchema }]),
     JwtModule,
   ],
   controllers: [ManageController],
   providers: [ManageService],
-  exports: [ManageService]
+  exports: [ManageService],
 })
 export class ManageModule {}

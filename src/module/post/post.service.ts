@@ -18,9 +18,13 @@ export class PostService {
     private readonly commentModel = model('Comments', CommentsSchema),
     private readonly appService: AppService,
   ) {}
-  
-  async createPost(createPostDto: CreatePostDto, user: any, files?: Express.Multer.File[]): Promise<any> {
-    let filePaths: string[] = [];
+
+  async createPost(
+    createPostDto: CreatePostDto,
+    user: any,
+    files?: Express.Multer.File[],
+  ): Promise<any> {
+    const filePaths: string[] = [];
 
     if (files && files.length > 0) {
       for (const file of files) {
@@ -42,25 +46,30 @@ export class PostService {
       downloadCount: 0,
       constTrue: 1,
     });
-    
+
     await newPost.save();
     this.logger.log(`게시글 생성: ${newPost.id}`);
     return newPost;
   }
 
-  async getPosts(page: number, count: number, topCategory?: string): Promise<any[]> {
+  async getPosts(
+    page: number,
+    count: number,
+    topCategory?: string,
+  ): Promise<any[]> {
     let items: any[] = [];
     let lastEvaluatedKey: ObjectType | undefined = undefined;
-    
+
     for (let i = 0; i <= page; i++) {
-      const query = this.postModel.query("constTrue")
+      const query = this.postModel
+        .query('constTrue')
         .eq(1)
-        .using("DateIndex")
+        .using('DateIndex')
         .limit(count)
-        .sort("descending");
-      
+        .sort('descending');
+
       if (topCategory) {
-        query.where("topCategory").eq(topCategory);
+        query.where('topCategory').eq(topCategory);
       }
 
       if (lastEvaluatedKey) {
@@ -76,23 +85,43 @@ export class PostService {
   }
 
   async getPost(id: string): Promise<any> {
-    const post = await this.postModel.query("id").eq(id).exec().then((res) => res[0]);
+    const post = await this.postModel
+      .query('id')
+      .eq(id)
+      .exec()
+      .then((res) => res[0]);
     if (!post) {
       throw new HttpException('게시글을 찾을 수 없습니다.', 404);
     }
     return post;
   }
 
-  async updatePost(id: string, updatePostDto: UpdatePostDto, user: any): Promise<any> {
-    const post = await this.postModel.query("id").eq(id).exec().then((res) => res[0]);
+  async updatePost(
+    id: string,
+    updatePostDto: UpdatePostDto,
+    user: any,
+  ): Promise<any> {
+    const post = await this.postModel
+      .query('id')
+      .eq(id)
+      .exec()
+      .then((res) => res[0]);
     if (!post) {
       throw new HttpException('게시글을 찾을 수 없습니다.', 404);
     }
-    
-    if (!(user.authority.includes('게시판관리자') || (user.authority.includes('사용자') && post.registrantId === user.id))) {
-      throw new HttpException('본인이 작성한 게시글만 수정할 수 있습니다.', 403);
+
+    if (
+      !(
+        user.authority.includes('게시판관리자') ||
+        (user.authority.includes('사용자') && post.registrantId === user.id)
+      )
+    ) {
+      throw new HttpException(
+        '본인이 작성한 게시글만 수정할 수 있습니다.',
+        403,
+      );
     }
-    
+
     Object.assign(post, updatePostDto);
     post.updatedAt = new Date().toISOString();
     await post.save();
@@ -100,13 +129,26 @@ export class PostService {
     return post;
   }
 
-  async addFiles(id: string, files: Express.Multer.File[], user: any): Promise<any> {
-    const post = await this.postModel.query("id").eq(id).exec().then((res) => res[0]);
+  async addFiles(
+    id: string,
+    files: Express.Multer.File[],
+    user: any,
+  ): Promise<any> {
+    const post = await this.postModel
+      .query('id')
+      .eq(id)
+      .exec()
+      .then((res) => res[0]);
     if (!post) {
       throw new HttpException('게시글을 찾을 수 없습니다.', 404);
     }
 
-    if (!(user.authority.includes('게시판관리자') || (user.authority.includes('사용자') && post.registrantId === user.id))) {
+    if (
+      !(
+        user.authority.includes('게시판관리자') ||
+        (user.authority.includes('사용자') && post.registrantId === user.id)
+      )
+    ) {
       throw new HttpException('작성자만 파일을 추가할 수 있습니다.', 403);
     }
 
@@ -122,14 +164,27 @@ export class PostService {
     return post;
   }
 
-  async removeFiles(id: string, filesToRemove: string[], user: any): Promise<any> {
-    const post = await this.postModel.query("id").eq(id).exec().then((res) => res[0]);
+  async removeFiles(
+    id: string,
+    filesToRemove: string[],
+    user: any,
+  ): Promise<any> {
+    const post = await this.postModel
+      .query('id')
+      .eq(id)
+      .exec()
+      .then((res) => res[0]);
     if (!post) {
       throw new HttpException('게시글을 찾을 수 없습니다.', 404);
     }
 
-    if (!(user.authority.includes('게시판관리자') || (user.authority.includes('사용자') && post.registrantId === user.id))) {
-        throw new HttpException('작성자만 파일을 제거할 수 있습니다.', 403);
+    if (
+      !(
+        user.authority.includes('게시판관리자') ||
+        (user.authority.includes('사용자') && post.registrantId === user.id)
+      )
+    ) {
+      throw new HttpException('작성자만 파일을 제거할 수 있습니다.', 403);
     }
 
     // 파일 삭제
@@ -137,7 +192,7 @@ export class PostService {
       const shouldDelete = filesToRemove.includes(filePath);
       if (shouldDelete) {
         const fileKey = filePath.split('/').pop();
-        if (fileKey){
+        if (fileKey) {
           this.appService.deleteFile(fileKey);
         }
       }
@@ -147,34 +202,49 @@ export class PostService {
     post.updatedAt = new Date().toISOString();
     await post.save();
     return post;
-}
+  }
 
   async deletePost(id: string, user: any): Promise<void> {
-    const post = await this.postModel.query("id").eq(id).exec().then((res) => res[0]);
+    const post = await this.postModel
+      .query('id')
+      .eq(id)
+      .exec()
+      .then((res) => res[0]);
     if (!post) {
       throw new HttpException('게시글을 찾을 수 없습니다.', 404);
     }
-    
-    if (!(user.authority.includes('게시판관리자') || (user.authority.includes('사용자') && post.registrantId === user.id))) {
-      throw new HttpException('본인이 작성한 게시글만 삭제할 수 있습니다.', 403);
+
+    if (
+      !(
+        user.authority.includes('게시판관리자') ||
+        (user.authority.includes('사용자') && post.registrantId === user.id)
+      )
+    ) {
+      throw new HttpException(
+        '본인이 작성한 게시글만 삭제할 수 있습니다.',
+        403,
+      );
     }
 
     if (post.filePaths && post.filePaths.length > 0) {
       for (const filePath of post.filePaths) {
-          const fileKey = filePath.split('/').pop();  // 파일 키 추출
-          await this.appService.deleteFile(fileKey);
+        const fileKey = filePath.split('/').pop(); // 파일 키 추출
+        await this.appService.deleteFile(fileKey);
       }
     }
 
     const comments = await this.commentModel.scan({ noticeId: id }).exec();
     for (const comment of comments) {
-        await this.commentModel.delete(comment.id);
+      await this.commentModel.delete(comment.id);
     }
 
     await this.postModel.delete(id);
   }
 
-  async createComment(createCommentDto: CreateCommentDto, user: any): Promise<any> {
+  async createComment(
+    createCommentDto: CreateCommentDto,
+    user: any,
+  ): Promise<any> {
     const newComment = new this.commentModel({
       id: uuidv4(),
       noticeId: createCommentDto.noticeId,
@@ -190,36 +260,59 @@ export class PostService {
   }
 
   async getComments(noticeId: string): Promise<any[]> {
-    return this.commentModel.query("noticeId")
+    return this.commentModel
+      .query('noticeId')
       .eq(noticeId)
-      .using("NoticeIdCreatedAtIndex")
-      .sort("ascending")
+      .using('NoticeIdCreatedAtIndex')
+      .sort('ascending')
       .exec();
   }
 
-  async updateComment(id: string, updateCommentDto: UpdateCommentDto, user: any): Promise<any> {
-    const comment = await this.commentModel.query("id").eq(id).exec().then((res) => res[0]);
+  async updateComment(
+    id: string,
+    updateCommentDto: UpdateCommentDto,
+    user: any,
+  ): Promise<any> {
+    const comment = await this.commentModel
+      .query('id')
+      .eq(id)
+      .exec()
+      .then((res) => res[0]);
     if (!comment) {
       throw new HttpException('댓글을 찾을 수 없습니다.', 404);
     }
-    
-    if (!(user.authority.includes('게시판관리자') || (user.authority.includes('사용자') && comment.user_id === user.id))) {
+
+    if (
+      !(
+        user.authority.includes('게시판관리자') ||
+        (user.authority.includes('사용자') && comment.user_id === user.id)
+      )
+    ) {
       throw new HttpException('본인이 작성한 댓글만 수정할 수 있습니다.', 403);
     }
 
     Object.assign(comment, updateCommentDto);
-    comment.updatedAt = new Date().toISOString();;
+    comment.updatedAt = new Date().toISOString();
     await comment.save();
     return comment;
   }
 
   async deleteComment(id: string, user: any): Promise<void> {
-    const comment = await this.commentModel.query("id").eq(id).exec().then((res) => res[0]);
+    const comment = await this.commentModel
+      .query('id')
+      .eq(id)
+      .exec()
+      .then((res) => res[0]);
     if (!comment) {
       throw new HttpException('댓글을 찾을 수 없습니다.', 404);
     }
-    
-    if (!(user.authority.includes('게시판관리자') || (user.authority.includes('사용자') && comment.user_id === user.id))) {
+
+    if (
+      !(
+        user.authority.includes('게시판관리자') ||
+        (user.authority.includes('사용자') && comment.user_id === user.id)
+      )
+    ) {
       throw new HttpException('본인이 작성한 댓글만 삭제할 수 있습니다.', 403);
     }
 

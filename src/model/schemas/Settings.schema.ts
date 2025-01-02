@@ -2,13 +2,13 @@ import * as dynamoose from 'dynamoose';
 
 export const SettingsSchema = new dynamoose.Schema({
   categoryType: {
-      type: String,
-      hashKey: true,
-      required: true,
-      index: {
-        name: 'CategoryTypeIndex',
-        project: true
-      }
+    type: String,
+    hashKey: true,
+    required: true,
+    index: {
+      name: 'CategoryTypeIndex',
+      project: true,
+    },
   },
   category: {
     type: String,
@@ -16,8 +16,8 @@ export const SettingsSchema = new dynamoose.Schema({
     required: true,
     index: {
       name: 'CategoryIndex',
-      project: true
-    }
+      project: true,
+    },
   },
   items: {
     type: Array,
@@ -27,9 +27,9 @@ export const SettingsSchema = new dynamoose.Schema({
         type: Object,
         schema: {
           item: { type: String },
-          description: { type: String }
-        }
-      }
-    ]
-  }
+          description: { type: String },
+        },
+      },
+    ],
+  },
 });

@@ -11,12 +11,10 @@ import { AppModule } from 'src/app.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ".env",
+      envFilePath: '.env',
       isGlobal: true,
     }),
-    DynamooseModule.forFeature([
-      { name: "Videos", schema: VideosSchema }
-    ]),
+    DynamooseModule.forFeature([{ name: 'Videos', schema: VideosSchema }]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'default_secret_key',
@@ -25,6 +23,6 @@ import { AppModule } from 'src/app.module';
     forwardRef(() => AppModule),
   ],
   providers: [VideoService],
-  controllers: [VideoController]
+  controllers: [VideoController],
 })
 export class VideoModule {}

@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
@@ -20,7 +29,7 @@ export class AppController {
   }
 
   //나중에 막아야함요
-  @Post("uploadFile")
+  @Post('uploadFile')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const result = await this.appService.uploadFile(file);
@@ -29,23 +38,23 @@ export class AppController {
       result,
     };
   }
-  
+
   //나중에 막아야함요
-  @Post("addSettings")
+  @Post('addSettings')
   async addSettings(@Body() data: any, @Res() res: Response) {
-    let newSettings = new this.SettingsModel({
-      ...data
-    })
+    const newSettings = new this.SettingsModel({
+      ...data,
+    });
 
     console.log(newSettings);
-    console.log("added");
+    console.log('added');
     await newSettings.save();
 
     return res.status(201).json({});
   }
 
   //나중에 막아야함요
-  @Get("Settings")
+  @Get('Settings')
   async getSettings() {
     return await this.SettingsModel.scan().exec();
   }

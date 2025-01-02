@@ -1,4 +1,9 @@
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v7 } from 'uuid';
@@ -6,16 +11,14 @@ import { v7 } from 'uuid';
 @Injectable()
 export class AppService {
   private readonly logger = new Logger(AppService.name);
-  constructor(
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly configService: ConfigService) {
     this.s3Client = new S3Client({
       region: process.env.AWS_REGION,
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ""
-      }
-    })
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+      },
+    });
   }
 
   getHello(): string {
@@ -61,7 +64,7 @@ export class AppService {
       return {
         message: 'File uploaded successfully',
         key: name,
-        result: s3Response
+        result: s3Response,
       };
     } catch (e) {
       console.error('Error uploading to S3:', e);

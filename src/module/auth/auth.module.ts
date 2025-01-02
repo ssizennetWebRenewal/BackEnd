@@ -14,13 +14,13 @@ import { RefreshTokenSchema } from 'src/model/schemas/RefreshToken.schema';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ".env",
+      envFilePath: '.env',
       isGlobal: true,
     }),
     DynamooseModule.forFeature([
-      { name: "Users", schema: UsersSchema },
-      { name: "Settings", schema: SettingsSchema },
-      { name: "RefreshToken", schema: RefreshTokenSchema }
+      { name: 'Users', schema: UsersSchema },
+      { name: 'Settings', schema: SettingsSchema },
+      { name: 'RefreshToken', schema: RefreshTokenSchema },
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
@@ -31,6 +31,6 @@ import { RefreshTokenSchema } from 'src/model/schemas/RefreshToken.schema';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
-  exports: [AuthService]
+  exports: [AuthService],
 })
 export class AuthModule {}

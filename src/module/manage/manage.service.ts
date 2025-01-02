@@ -7,10 +7,15 @@ import { SettingsSchema } from 'src/model/schemas/Settings.schema';
 export class ManageService {
   private readonly logger = new Logger(ManageService.name);
   constructor(
-      @InjectModel('Settings') private readonly settingsModel = model('Settings', SettingsSchema),
+    @InjectModel('Settings')
+    private readonly settingsModel = model('Settings', SettingsSchema),
   ) {}
 
-  async createSetting(categoryType: string, category: string, items: any[]): Promise<any> {
+  async createSetting(
+    categoryType: string,
+    category: string,
+    items: any[],
+  ): Promise<any> {
     const newSetting = new this.settingsModel({
       categoryType,
       category,
@@ -19,7 +24,7 @@ export class ManageService {
     this.logger.log(`Creating setting ${categoryType} ${category}`);
     return await newSetting.save();
   }
-  
+
   async getSetting(categoryType: string, category?: string): Promise<any> {
     const settings = await this.settingsModel
       .query('categoryType')
@@ -32,7 +37,11 @@ export class ManageService {
     return settings;
   }
 
-  async updateSetting(categoryType: string, category: string, items: any[]): Promise<any> {
+  async updateSetting(
+    categoryType: string,
+    category: string,
+    items: any[],
+  ): Promise<any> {
     const setting = await this.settingsModel.get({ categoryType, category });
     if (!setting) {
       throw new HttpException('Setting not found', 404);

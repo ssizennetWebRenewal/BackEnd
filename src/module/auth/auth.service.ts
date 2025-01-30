@@ -7,6 +7,7 @@ import {
   CreateUserDto,
   LoginUserDto,
   UpdateUserDto,
+  idDto,
   refreshTokenDto,
 } from 'src/module/auth/dto/user.dto';
 import { UsersSchema } from 'src/model/schemas/Users.schema';
@@ -35,6 +36,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly appService: AppService,
   ) {}
+
+  async idCheck(data: idDto) {
+    let user = (await this.UsersModel.query('id').eq(data.id).exec())[0];
+    if (!user) {
+      throw new HttpException('User not found', 404);
+    }
+    return {"message": `User found, ${data.id}`};
+  }
 
   async signup(data: CreateUserDto) {
     const existingUser = await this.UsersModel.query('id').eq(data.id).exec();

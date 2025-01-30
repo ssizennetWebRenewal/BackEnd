@@ -19,6 +19,7 @@ import {
   CreateUserDto,
   LoginUserDto,
   UpdateUserDto,
+  idDto,
   refreshTokenDto,
 } from 'src/module/auth/dto/user.dto';
 import {
@@ -93,6 +94,14 @@ export class AuthController {
     const profile = await this.authService.profile(req);
     return res.status(200).json(profile);
   }
+
+  @Post('idCheck')
+    @ApiOperation({summary: '아이디 중복확인', description: 'id의 중복 여부를 반환한다'})
+    @ApiBody({type: idDto})
+    async idCheck(@Body() body: idDto, @Res() res: Response) {
+        let result = await this.authService.idCheck(body);
+        return res.status(200).json(result);
+    }
 
   @ApiBearerAuth('access')
   @UseGuards(JwtAuthGuard)

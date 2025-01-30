@@ -137,6 +137,10 @@ export class LoginUserDto extends PickType(UserDto, [
   'password',
 ] as const) {}
 
+export class idDto extends PickType(UserDto, [
+  "id"
+] as const) {}
+
 export class UpdateUserDto extends PartialType(
   OmitType(UserDto, ['id', 'createdAt', 'updatedAt', 'password'] as const),
 ) {}

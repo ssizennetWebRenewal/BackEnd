@@ -40,9 +40,9 @@ export class AuthService {
   async idCheck(data: idDto) {
     let user = (await this.UsersModel.query('id').eq(data.id).exec())[0];
     if (!user) {
-      throw new HttpException('User not found', 404);
+      return {"message": `Id available`};
     }
-    return {"message": `User found, ${data.id}`};
+    throw new HttpException(`User already exist, ${data.id}`, 409);
   }
 
   async signup(data: CreateUserDto) {

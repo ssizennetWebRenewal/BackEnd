@@ -43,7 +43,7 @@ export class PostController {
   async getPosts(
     @Query('page') page: string,
     @Query('count') count: string,
-    @Query('topCategory') topCategory?: string,
+    @Query('topCategory') topCategory: string,
   ) {
     const pageNum: number = parseInt(page);
     const countNum: number = parseInt(count);

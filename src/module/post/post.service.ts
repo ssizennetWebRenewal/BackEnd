@@ -55,31 +55,44 @@ export class PostService {
   async getPosts(
     page: number,
     count: number,
-    topCategory?: string,
+    topCategory: string,
   ): Promise<any[]> {
     let items: any[] = [];
     let lastEvaluatedKey: ObjectType | undefined = undefined;
 
     for (let i = 0; i <= page; i++) {
-      const query = this.postModel
-        .query('constTrue')
-        .eq(1)
-        .using('DateIndex')
-        .limit(count)
-        .sort('descending');
+      let query;
 
       if (topCategory) {
-        query.where('topCategory').eq(topCategory);
+        query = this.postModel
+          .query('topCategory')
+          .eq(topCategory)
+          .using('CategoryIndex')
+          .limit(count)
+          .sort('descending');
+      } else {
+        query = this.postModel
+          .query('constTrue')
+          .eq(1)
+          .using('DateIndex')
+          .limit(count)
+          .sort('descending');
       }
-
+      
       if (lastEvaluatedKey) {
-        query.startAt(lastEvaluatedKey);
+        query = query.startAt(lastEvaluatedKey);
       }
+      
       const result: any = await query.exec();
+      
       lastEvaluatedKey = result.lastKey;
-      if (i === page) {
-        items = result;
+
+      if (Array.isArray(result)) {
+        items.push(...result);
+      } else if (result.Items) {
+        items.push(...result.Items);
       }
+      if (!lastEvaluatedKey) break;
     }
     return items;
   }

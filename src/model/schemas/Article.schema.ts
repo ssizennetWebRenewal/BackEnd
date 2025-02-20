@@ -4,6 +4,10 @@ export const ArticleSchema = new BaseSchema({
   topCategory: {
     type: String,
     required: true,
+    index: {
+      name: 'CategoryIndex',
+      global: true
+    }
   },
   subCategory: {
     type: String,

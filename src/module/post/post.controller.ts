@@ -100,6 +100,7 @@ export class PostController {
     return this.postService.deletePost(id, req.user);
   }
 }
+
 @ApiTags('Comment')
 @Controller('comment')
 export class CommentController {

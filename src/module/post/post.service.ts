@@ -258,7 +258,22 @@ export class PostService {
     createCommentDto: CreateCommentDto,
     user: any,
   ): Promise<any> {
-    const newComment = new this.commentModel({
+    if (createCommentDto.replyId) {
+      const repliedComment = await this.commentModel
+          .query('id')
+          .eq(createCommentDto.replyId)
+          .exec()
+          .then((res) => res[0]);
+      
+      if (!repliedComment) {
+        throw new HttpException('존재하지 않는 댓글 id 입니다.', 400);
+      }
+      if (repliedComment.replyId !== undefined && repliedComment.replyId !== null) {
+        throw new HttpException('답글에 대한 답글은 달 수 없습니다.', 400);
+      }
+    }
+
+    const newCommentData: any = {
       id: uuidv4(),
       noticeId: createCommentDto.noticeId,
       body: createCommentDto.body,
@@ -266,7 +281,13 @@ export class PostService {
       userName: user.name,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    });
+    };
+  
+    if (createCommentDto.replyId) {
+      newCommentData.replyId = createCommentDto.replyId;
+    }
+  
+    const newComment = new this.commentModel(newCommentData);
 
     await newComment.save();
     return newComment;

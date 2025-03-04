@@ -18,6 +18,11 @@ export const CommentsSchema = new BaseSchema({
       project: ['ALL'],
     },
   },
+  replyId: {
+    type: String || null,
+    default: null,
+    require: false
+  },
   body: {
     type: String,
     required: true,

@@ -1,5 +1,5 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class CreateCommentDto {
   @ApiProperty({
@@ -14,6 +14,12 @@ export class CreateCommentDto {
   @IsString()
   @IsNotEmpty()
   body: string = '';
+
+
+  @ApiProperty({ description: '답글', example: "590089eb-216a-4eab-aac5-7e63a8731787", required: false, nullable: true })
+  @IsString()
+  @IsUUID()
+  replyId?: string;
 }
 
 export class UpdateCommentDto extends PickType(CreateCommentDto, [
